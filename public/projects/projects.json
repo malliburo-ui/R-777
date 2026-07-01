@@ -1,0 +1,24 @@
+{
+  "projects": [
+    {
+      "id": "bank",
+      "title": "Bank dashboard",
+      "image": "01-bank.png"
+    },
+    {
+      "id": "greenlock",
+      "title": "Greenlock",
+      "image": "02-greenlock.png"
+    },
+    {
+      "id": "mbank",
+      "title": "Mbank — Transactions",
+      "image": "03-mbank.png"
+    },
+    {
+      "id": "ecto",
+      "title": "Ecto — Typography",
+      "image": "04-ecto.png"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+---
+description: Figma frame links → implement portfolio UI from design context
+globs:
+  - src/**/*
+  - design/**/*
+alwaysApply: false
+---
+
+# Figma → Portfolio
+
+When the user sends a `figma.com/design/...` URL (with or without `node-id`):
+
+1. Parse with `parseFigmaDesignUrl` from `src/lib/figma.ts`.
+2. Use **Figma MCP** `get_design_context` with `fileKey` and `nodeId` (convert `-` to `:` in node-id).
+3. Read the screenshot + reference code; adapt to this stack — **Next.js App Router**, **Tailwind CSS v4**, TypeScript.
+4. Update `design/frames.json` with the frame URL, nodeId, and status.
+5. Implement in `src/components/<SectionName>/` — reuse existing components when possible.
+6. Export images/SVGs to `public/figma/` when needed; do not hotlink Figma asset URLs in production code.
+7. Match spacing, typography, and colors from the design; prefer CSS variables in `globals.css` for tokens repeated across sections.
+
+Do not invent layout if a Figma link was provided — fetch design context first.
+
+If MCP is unavailable, ask the user to confirm or paste a screenshot.

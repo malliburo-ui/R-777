@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Figma frame registry",
+  "type": "object",
+  "required": ["file", "frames"],
+  "properties": {
+    "file": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "fileKey": { "type": "string" },
+        "url": { "type": "string" }
+      }
+    },
+    "frames": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "url", "status"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "nodeId": { "type": "string" },
+          "url": { "type": "string" },
+          "status": {
+            "enum": ["pending", "in-progress", "done"]
+          },
+          "notes": { "type": "string" }
+        }
+      }
+    }
+  }
+}

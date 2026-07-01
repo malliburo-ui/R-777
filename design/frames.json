@@ -1,0 +1,18 @@
+{
+  "$schema": "./frames.schema.json",
+  "file": {
+    "name": "WORKOUTII",
+    "fileKey": "Jzp1DZk5IVqDysrCvpLB3R",
+    "url": "https://www.figma.com/design/Jzp1DZk5IVqDysrCvpLB3R/WORKOUTII"
+  },
+  "frames": [
+    {
+      "id": "home",
+      "name": "ZINE 218",
+      "nodeId": "1008:2543",
+      "url": "https://www.figma.com/design/Jzp1DZk5IVqDysrCvpLB3R/WORKOUTII?node-id=1008-2543",
+      "status": "done",
+      "notes": "Main hero — src/components/home/Zine218Hero.tsx"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+:root {
+  --portfolio-bg: #232003;
+  --portfolio-fg: #c7c7c7;
+}
+
+@theme inline {
+  --font-sans: var(--font-portfolio), system-ui, sans-serif;
+  --color-portfolio-bg: var(--portfolio-bg);
+  --color-portfolio-fg: var(--portfolio-fg);
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--portfolio-fg) 15%, transparent);
+}
