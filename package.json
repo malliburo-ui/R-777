@@ -4,13 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run gallery:optimize && npm run gallery:sync && next build",
     "start": "next start",
     "lint": "eslint",
     "projects:sync": "node scripts/sync-projects.mjs",
     "cases:sync": "node scripts/sync-gallery.mjs cases",
     "drawings:sync": "node scripts/sync-gallery.mjs drawings",
-    "gallery:sync": "npm run cases:sync && npm run drawings:sync"
+    "gallery:sync": "npm run cases:sync && npm run drawings:sync",
+    "gallery:optimize": "node scripts/optimize-gallery.mjs all",
+    "cases:optimize": "node scripts/optimize-gallery.mjs cases",
+    "drawings:optimize": "node scripts/optimize-gallery.mjs drawings"
   },
   "dependencies": {
     "next": "16.2.9",
@@ -24,6 +27,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
+    "sharp": "^0.34.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

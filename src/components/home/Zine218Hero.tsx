@@ -48,18 +48,16 @@ export function Zine218Hero({ cases, drawings }: Zine218HeroProps) {
           side="left"
           sectionLabel="CASES"
           items={cases}
-          imageBasePath="/cases/images"
+          imageBasePath="/cases/web"
           previewAnchor="bottom-left"
-          unoptimized
         />
 
         <SideScrollGallery
           side="right"
           sectionLabel="DRAWINGS"
           items={drawings}
-          imageBasePath="/drawings/images"
+          imageBasePath="/drawings/web"
           previewAnchor="top-right"
-          unoptimized
         />
       </div>
     </section>

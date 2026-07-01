@@ -10,8 +10,6 @@ import { fileURLToPath } from "node:url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, "..");
 
-const IMAGE_EXT = /\.(png|jpe?g|webp|gif)$/i;
-
 function titleFromFilename(filename) {
   const withoutExt = filename.replace(/\.[^.]+$/, "");
   const withoutOrder = withoutExt.replace(/^\d+[-_.\s]*/, "");
@@ -40,6 +38,7 @@ function main() {
   const imagesDir = path.join(ROOT, "public", folder, "images");
   const manifestPath = path.join(ROOT, "public", folder, `${folder}.json`);
   const metaPath = path.join(ROOT, "public", folder, `${folder}.meta.json`);
+  const webDir = path.join(ROOT, "public", folder, "web");
 
   if (!fs.existsSync(imagesDir)) {
     fs.mkdirSync(imagesDir, { recursive: true });
@@ -54,28 +53,33 @@ function main() {
     }
   }
 
-  const files = fs
+  const sourceFiles = fs
     .readdirSync(imagesDir)
-    .filter((name) => IMAGE_EXT.test(name) && !name.startsWith("."))
+    .filter((name) => /\.png$/i.test(name) && !name.startsWith("."))
     .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 
-  if (files.length === 0) {
-    console.log(`No images in public/${folder}/images/`);
+  if (sourceFiles.length === 0) {
+    console.log(`No PNG sources in public/${folder}/images/`);
     process.exit(0);
   }
 
-  const items = files.map((image) => {
-    const override = meta[image] ?? {};
+  const items = sourceFiles.map((sourceName) => {
+    const webName = sourceName.replace(/\.png$/i, ".webp");
+    const override = meta[sourceName] ?? meta[webName] ?? {};
     return {
-      id: override.id ?? idFromFilename(image),
-      title: override.title ?? titleFromFilename(image),
-      image,
+      id: override.id ?? idFromFilename(sourceName),
+      title: override.title ?? titleFromFilename(sourceName),
+      image: webName,
     };
   });
 
   fs.writeFileSync(manifestPath, `${JSON.stringify({ items }, null, 2)}\n`, "utf8");
 
-  console.log(`✓ ${items.length} item(s) → public/${folder}/${folder}.json`);
+  if (!fs.existsSync(webDir)) {
+    console.warn(`⚠ public/${folder}/web/ not found — run: npm run gallery:optimize`);
+  }
+
+  console.log(`✓ ${items.length} item(s) → public/${folder}/${folder}.json (served from web/)`);
   items.forEach((item, index) => {
     console.log(`  ${index + 1}. ${item.title} (${item.image})`);
   });

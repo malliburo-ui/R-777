@@ -7,7 +7,8 @@ import { galleryImagePath, type GalleryEntry } from "@/lib/gallery";
 const inset = "clamp(10px, 1.5vw, 16px)";
 const WHEEL_THRESHOLD = 36;
 const STEP_COOLDOWN_MS = 90;
-const CASES_ASSET_VERSION = "10";
+const PRELOAD_RADIUS = 2;
+const GALLERY_ASSET_VERSION = "11";
 
 type SideScrollGalleryProps = {
   side: "left" | "right";
@@ -16,8 +17,24 @@ type SideScrollGalleryProps = {
   imageBasePath: string;
   previewAnchor: "bottom-left" | "top-right";
   previewTop?: string;
-  unoptimized?: boolean;
 };
+
+const preloaded = new Set<string>();
+
+function preloadGalleryImage(basePath: string, filename: string, priority: "high" | "low" = "low") {
+  const url = `${galleryImagePath(basePath, filename)}?v=${GALLERY_ASSET_VERSION}`;
+  if (preloaded.has(url)) {
+    return;
+  }
+
+  preloaded.add(url);
+  const img = new window.Image();
+  if (priority === "high") {
+    img.fetchPriority = "high";
+  }
+  img.decoding = "async";
+  img.src = url;
+}
 
 export function SideScrollGallery({
   side,
@@ -26,7 +43,6 @@ export function SideScrollGallery({
   imageBasePath,
   previewAnchor,
   previewTop = "clamp(140px, 28vh, 220px)",
-  unoptimized = false,
 }: SideScrollGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const zoneRef = useRef<HTMLDivElement>(null);
@@ -60,11 +76,46 @@ export function SideScrollGallery({
   );
 
   useEffect(() => {
-    items.forEach((item) => {
-      const img = new window.Image();
-      img.src = galleryImagePath(imageBasePath, item.image);
-    });
-  }, [items, imageBasePath]);
+    if (items.length === 0) {
+      return;
+    }
+
+    for (let offset = 0; offset <= PRELOAD_RADIUS; offset += 1) {
+      for (const index of [activeIndex - offset, activeIndex + offset]) {
+        if (index < 0 || index >= items.length) {
+          continue;
+        }
+
+        preloadGalleryImage(
+          imageBasePath,
+          items[index].image,
+          index === activeIndex ? "high" : "low",
+        );
+      }
+    }
+  }, [activeIndex, items, imageBasePath]);
+
+  useEffect(() => {
+    if (items.length === 0) {
+      return;
+    }
+
+    const preloadRest = () => {
+      items.forEach((item, index) => {
+        if (Math.abs(index - activeIndex) > PRELOAD_RADIUS) {
+          preloadGalleryImage(imageBasePath, item.image, "low");
+        }
+      });
+    };
+
+    if ("requestIdleCallback" in window) {
+      const idleId = window.requestIdleCallback(preloadRest, { timeout: 4000 });
+      return () => window.cancelIdleCallback(idleId);
+    }
+
+    const timeoutId = window.setTimeout(preloadRest, 1500);
+    return () => window.clearTimeout(timeoutId);
+  }, [activeIndex, items, imageBasePath]);
 
   useEffect(() => {
     const zone = zoneRef.current;
@@ -167,11 +218,7 @@ export function SideScrollGallery({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             key={active.image}
-            src={
-              unoptimized
-                ? `${galleryImagePath(imageBasePath, active.image)}?v=${CASES_ASSET_VERSION}`
-                : galleryImagePath(imageBasePath, active.image)
-            }
+            src={`${galleryImagePath(imageBasePath, active.image)}?v=${GALLERY_ASSET_VERSION}`}
             alt={active.title}
             className={`absolute inset-0 size-full ${imageObjectClass}`}
             decoding="async"
