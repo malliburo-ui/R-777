@@ -108,13 +108,13 @@ export function SideScrollGallery({
       });
     };
 
-    if ("requestIdleCallback" in window) {
+    if (typeof window.requestIdleCallback === "function") {
       const idleId = window.requestIdleCallback(preloadRest, { timeout: 4000 });
       return () => window.cancelIdleCallback(idleId);
     }
 
-    const timeoutId = window.setTimeout(preloadRest, 1500);
-    return () => window.clearTimeout(timeoutId);
+    const timeoutId = setTimeout(preloadRest, 1500);
+    return () => clearTimeout(timeoutId);
   }, [activeIndex, items, imageBasePath]);
 
   useEffect(() => {
