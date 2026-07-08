@@ -10,7 +10,7 @@ import {
 } from "@/components/home/MobileHomeControls";
 import { galleryImagePath, type GalleryEntry } from "@/lib/gallery";
 
-const GALLERY_ASSET_VERSION = "26";
+const GALLERY_ASSET_VERSION = "29";
 const PRELOAD_RADIUS = 2;
 const MOBILE_IMAGE_BASE = "/cases/Mobile";
 const MOBILE_FAN_SOURCE = "21.gif";
@@ -51,6 +51,27 @@ function isControlsHit(target: EventTarget | null) {
   return Boolean(target.closest(`#${MOBILE_CONTROLS_ROOT_ID}`));
 }
 
+function readMaxScroll(scrollEl: HTMLDivElement) {
+  return Math.max(0, scrollEl.scrollHeight - scrollEl.clientHeight);
+}
+
+function indexFromScrollTop(scrollTop: number, maxScroll: number, itemCount: number) {
+  if (itemCount <= 1 || maxScroll <= 0) {
+    return 0;
+  }
+
+  const progress = scrollTop / maxScroll;
+  return Math.min(itemCount - 1, Math.max(0, Math.round(progress * (itemCount - 1))));
+}
+
+function scrollTopForIndex(index: number, maxScroll: number, itemCount: number) {
+  if (itemCount <= 1 || maxScroll <= 0) {
+    return 0;
+  }
+
+  return (index / (itemCount - 1)) * maxScroll;
+}
+
 const preloaded = new Set<string>();
 
 function preloadGalleryImage(filename: string, priority: "high" | "low" = "low") {
@@ -78,14 +99,9 @@ export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
   const [yellowOverlayActive, setYellowOverlayActive] = useState(false);
   const [portalReady, setPortalReady] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const scrollStepRef = useRef(scrollStep);
 
   const count = items.length;
   const active = items[activeIndex];
-
-  useEffect(() => {
-    scrollStepRef.current = scrollStep;
-  }, [scrollStep]);
 
   useEffect(() => {
     const updateScrollStep = () => {
@@ -106,13 +122,9 @@ export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
       return;
     }
 
-    const step = scrollStepRef.current;
-    if (step <= 0) {
-      return;
-    }
-
-    const nextIndex = Math.round(scrollEl.scrollTop / step);
-    setActiveIndex(Math.min(count - 1, Math.max(0, nextIndex)));
+    const maxScroll = readMaxScroll(scrollEl);
+    const nextIndex = indexFromScrollTop(scrollEl.scrollTop, maxScroll, count);
+    setActiveIndex(nextIndex);
   }, [count]);
 
   useEffect(() => {
@@ -257,14 +269,14 @@ export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
 
       syncIndexFromScroll();
 
-      const step = scrollStepRef.current;
-      if (step <= 0) {
+      const maxScroll = readMaxScroll(scrollEl);
+      if (maxScroll <= 0) {
         return;
       }
 
-      const snappedIndex = Math.round(scrollEl.scrollTop / step);
+      const snappedIndex = indexFromScrollTop(scrollEl.scrollTop, maxScroll, count);
       scrollEl.scrollTo({
-        top: snappedIndex * step,
+        top: scrollTopForIndex(snappedIndex, maxScroll, count),
         behavior: "smooth",
       });
     };
