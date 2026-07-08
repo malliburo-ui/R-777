@@ -3,17 +3,21 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --hostname 0.0.0.0",
     "build": "npm run gallery:optimize && npm run gallery:sync && next build",
     "start": "next start",
     "lint": "eslint",
     "projects:sync": "node scripts/sync-projects.mjs",
     "cases:sync": "node scripts/sync-gallery.mjs cases",
     "drawings:sync": "node scripts/sync-gallery.mjs drawings",
-    "gallery:sync": "npm run cases:sync && npm run drawings:sync",
+    "mind:sync": "node scripts/sync-gallery.mjs mind",
+    "cv-cube:sync": "node scripts/sync-gallery.mjs cv-cube",
+    "gallery:sync": "npm run cases:sync && npm run drawings:sync && npm run mind:sync && npm run cv-cube:sync",
     "gallery:optimize": "node scripts/optimize-gallery.mjs all",
     "cases:optimize": "node scripts/optimize-gallery.mjs cases",
-    "drawings:optimize": "node scripts/optimize-gallery.mjs drawings"
+    "drawings:optimize": "node scripts/optimize-gallery.mjs drawings",
+    "mind:optimize": "node scripts/optimize-gallery.mjs mind",
+    "cv-cube:optimize": "node scripts/optimize-gallery.mjs cv-cube"
   },
   "dependencies": {
     "next": "16.2.9",

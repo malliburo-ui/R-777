@@ -8,15 +8,17 @@ const inset = "clamp(10px, 1.5vw, 16px)";
 const WHEEL_THRESHOLD = 36;
 const STEP_COOLDOWN_MS = 90;
 const PRELOAD_RADIUS = 2;
-const GALLERY_ASSET_VERSION = "13";
+const GALLERY_ASSET_VERSION = "18";
 
 type SideScrollGalleryProps = {
   side: "left" | "right";
   sectionLabel: string;
   items: GalleryEntry[];
   imageBasePath: string;
-  previewAnchor: "bottom-left" | "top-right";
+  previewAnchor: "bottom-left" | "top-right" | "bottom-right";
   previewTop?: string;
+  previewFit?: "square" | "natural";
+  previewScale?: number;
 };
 
 const preloaded = new Set<string>();
@@ -43,6 +45,8 @@ export function SideScrollGallery({
   imageBasePath,
   previewAnchor,
   previewTop = "clamp(140px, 28vh, 220px)",
+  previewFit = "square",
+  previewScale = 1,
 }: SideScrollGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const zoneRef = useRef<HTMLDivElement>(null);
@@ -152,6 +156,53 @@ export function SideScrollGallery({
     };
   }, [count, step]);
 
+  if (!active) {
+    return null;
+  }
+
+  const imageObjectClass =
+    previewAnchor === "bottom-left"
+      ? "object-contain object-left-bottom"
+      : previewAnchor === "bottom-right"
+        ? "object-contain object-right-bottom"
+        : "object-contain object-right-top";
+
+  const previewMaxWidth = `clamp(${220 * previewScale}px, ${42 * previewScale}vw, ${420 * previewScale}px)`;
+  const previewMaxHeight =
+    previewScale > 1
+      ? "min(85vh, calc(100dvh - 80px))"
+      : "min(70vh, calc(100dvh - 160px))";
+
+  const zoneClassName = `absolute inset-y-0 z-20 w-1/2 touch-pan-y ${isLeft ? "left-0" : "right-0"}`;
+
+  const previewPositionClass =
+    previewAnchor === "bottom-left"
+      ? "bottom-0 left-0"
+      : previewAnchor === "bottom-right"
+        ? "bottom-0 right-0"
+        : "";
+
+  const previewPositionStyle =
+    previewAnchor === "top-right" ? { top: previewTop, right: inset } : {};
+
+  const previewPaddingStyle =
+    previewAnchor === "bottom-left"
+      ? { paddingLeft: inset, paddingBottom: inset }
+      : previewAnchor === "bottom-right"
+        ? { paddingRight: inset, paddingBottom: inset }
+        : { paddingTop: inset };
+
+  const previewFlexClass =
+    previewAnchor === "bottom-left"
+      ? "justify-start items-end"
+      : previewAnchor === "bottom-right"
+        ? "justify-end items-end"
+        : previewAnchor === "top-right"
+          ? "justify-end items-start"
+          : "justify-start items-start";
+
+  const imageSrc = `${galleryImagePath(imageBasePath, active.image)}?v=${GALLERY_ASSET_VERSION}`;
+
   const onTouchStart = (event: React.TouchEvent) => {
     touchStartY.current = event.touches[0]?.clientY ?? null;
   };
@@ -173,31 +224,11 @@ export function SideScrollGallery({
     touchStartY.current = null;
   };
 
-  if (!active) {
-    return null;
-  }
-
-  const imageObjectClass =
-    previewAnchor === "bottom-left" ? "object-contain object-left-bottom" : "object-contain object-right-top";
-
-  const previewPositionClass =
-    previewAnchor === "bottom-left" ? "bottom-0 left-0" : "";
-
-  const previewPositionStyle =
-    previewAnchor === "bottom-left"
-      ? {}
-      : { top: previewTop, right: inset };
-
-  const previewPaddingStyle =
-    previewAnchor === "bottom-left"
-      ? { paddingLeft: inset }
-      : { paddingTop: inset };
-
   return (
-    <>
+    <div className="absolute inset-0">
       <div
         ref={zoneRef}
-        className={`absolute inset-y-0 z-20 w-1/2 touch-pan-y ${isLeft ? "left-0" : "right-0"}`}
+        className={zoneClassName}
         onMouseLeave={() => {
           wheelDelta.current = 0;
         }}
@@ -206,26 +237,50 @@ export function SideScrollGallery({
         aria-label={`${sectionLabel} gallery. Scroll to change image.`}
       />
 
-      <div
-        className={`pointer-events-none absolute z-20 aspect-square ${previewPositionClass}`}
-        style={{
-          width: "clamp(220px, 42vw, 420px)",
-          ...previewPaddingStyle,
-          ...previewPositionStyle,
-        }}
-      >
-        <div className="relative size-full">
+      {previewFit === "natural" ? (
+        <div
+          className={`pointer-events-none absolute z-20 flex ${previewPositionClass} ${previewFlexClass}`}
+          style={{
+            maxWidth: previewMaxWidth,
+            ...previewPaddingStyle,
+            ...previewPositionStyle,
+          }}
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             key={active.image}
-            src={`${galleryImagePath(imageBasePath, active.image)}?v=${GALLERY_ASSET_VERSION}`}
+            src={imageSrc}
             alt={active.title}
-            className={`absolute inset-0 size-full ${imageObjectClass}`}
+            className="block h-auto w-auto max-w-full"
+            style={{ maxHeight: previewMaxHeight }}
             decoding="async"
             fetchPriority="high"
+            draggable={false}
           />
         </div>
-      </div>
-    </>
+      ) : (
+        <div
+          className={`pointer-events-none absolute z-20 aspect-square ${previewPositionClass}`}
+          style={{
+            width: previewMaxWidth,
+            ...previewPaddingStyle,
+            ...previewPositionStyle,
+          }}
+        >
+          <div className="relative size-full">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              key={active.image}
+              src={imageSrc}
+              alt={active.title}
+              className={`absolute inset-0 size-full ${imageObjectClass}`}
+              decoding="async"
+              fetchPriority="high"
+              draggable={false}
+            />
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

@@ -10,13 +10,17 @@ import { fileURLToPath } from "node:url";
 
 import sharp from "sharp";
 
+const GALLERY_FOLDERS = ["cases", "drawings", "mind", "cv-cube"];
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, "..");
 
 const MAX_EDGE = 1600;
 const WEBP_QUALITY = 88;
 
-const SOURCE_EXT = /\.png$/i;
+const SOURCE_RASTER = /\.(png|jpe?g)$/i;
+const SOURCE_GIF = /\.gif$/i;
+const SOURCE_NAME = /^\d+\.(png|jpe?g|gif)$/i;
 
 async function optimizeFolder(folder) {
   const sourceDir = path.join(ROOT, "public", folder, "images");
@@ -31,20 +35,31 @@ async function optimizeFolder(folder) {
 
   const sources = fs
     .readdirSync(sourceDir)
-    .filter((name) => SOURCE_EXT.test(name) && !name.startsWith("."))
+    .filter((name) => SOURCE_NAME.test(name) && !name.startsWith("."))
     .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 
   if (sources.length === 0) {
-    console.log(`No PNG sources in public/${folder}/images/`);
+    console.log(`No PNG/GIF sources in public/${folder}/images/`);
     return { folder, count: 0, savedBytes: 0 };
   }
+
+  const activeWebNames = new Set();
 
   let savedBytes = 0;
 
   for (const sourceName of sources) {
     const sourcePath = path.join(sourceDir, sourceName);
-    const webName = sourceName.replace(SOURCE_EXT, ".webp");
+    const isGif = SOURCE_GIF.test(sourceName);
+    const webName = isGif ? sourceName : sourceName.replace(SOURCE_RASTER, ".webp");
     const webPath = path.join(webDir, webName);
+    activeWebNames.add(webName);
+
+    if (isGif) {
+      fs.copyFileSync(sourcePath, webPath);
+      const size = fs.statSync(sourcePath).size;
+      console.log(`  ${sourceName} → web/${webName} (${formatBytes(size)}, copied)`);
+      continue;
+    }
 
     await sharp(sourcePath)
       .rotate()
@@ -68,6 +83,13 @@ async function optimizeFolder(folder) {
     );
   }
 
+  for (const webName of fs.readdirSync(webDir)) {
+    if (!activeWebNames.has(webName) && !webName.startsWith(".")) {
+      fs.unlinkSync(path.join(webDir, webName));
+      console.log(`  removed stale web/${webName}`);
+    }
+  }
+
   return { folder, count: sources.length, savedBytes };
 }
 
@@ -80,10 +102,14 @@ function formatBytes(bytes) {
 async function main() {
   const target = process.argv[2] ?? "all";
   const folders =
-    target === "all" ? ["cases", "drawings"] : target === "cases" || target === "drawings" ? [target] : null;
+    target === "all"
+      ? GALLERY_FOLDERS
+      : GALLERY_FOLDERS.includes(target)
+        ? [target]
+        : null;
 
   if (!folders) {
-    console.error("Usage: node scripts/optimize-gallery.mjs [cases|drawings|all]");
+    console.error(`Usage: node scripts/optimize-gallery.mjs [${GALLERY_FOLDERS.join("|")}|all]`);
     process.exit(1);
   }
 

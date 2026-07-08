@@ -7,6 +7,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+const GALLERY_FOLDERS = ["cases", "drawings", "mind", "cv-cube"];
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, "..");
 
@@ -30,8 +32,8 @@ function idFromFilename(filename) {
 
 function main() {
   const folder = process.argv[2];
-  if (folder !== "cases" && folder !== "drawings") {
-    console.error("Usage: node scripts/sync-gallery.mjs <cases|drawings>");
+  if (!GALLERY_FOLDERS.includes(folder)) {
+    console.error(`Usage: node scripts/sync-gallery.mjs <${GALLERY_FOLDERS.join("|")}>`);
     process.exit(1);
   }
 
@@ -55,16 +57,18 @@ function main() {
 
   const sourceFiles = fs
     .readdirSync(imagesDir)
-    .filter((name) => /\.png$/i.test(name) && !name.startsWith("."))
+    .filter((name) => /^\d+\.(png|jpe?g|gif)$/i.test(name) && !name.startsWith("."))
     .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 
   if (sourceFiles.length === 0) {
-    console.log(`No PNG sources in public/${folder}/images/`);
+    fs.writeFileSync(manifestPath, `${JSON.stringify({ items: [] }, null, 2)}\n`, "utf8");
+    console.log(`No PNG/GIF sources in public/${folder}/images/ — wrote empty manifest`);
     process.exit(0);
   }
 
   const items = sourceFiles.map((sourceName) => {
-    const webName = sourceName.replace(/\.png$/i, ".webp");
+    const isGif = /\.gif$/i.test(sourceName);
+    const webName = isGif ? sourceName : sourceName.replace(/\.(png|jpe?g)$/i, ".webp");
     const override = meta[sourceName] ?? meta[webName] ?? {};
     return {
       id: override.id ?? idFromFilename(sourceName),

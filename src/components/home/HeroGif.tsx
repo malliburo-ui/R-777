@@ -23,7 +23,7 @@ export function HeroGif() {
       aria-hidden
       className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center"
     >
-      <div className="relative aspect-square w-[min(95vw,1140px)] translate-y-[clamp(36px,10vh,115px)] rotate-[17deg] sm:w-[min(95vw,1020px)] lg:w-[min(90vw,912px)]">
+      <div className="relative aspect-square w-[min(95vw,1140px)] translate-y-[clamp(36px,10vh,115px)] rotate-[17deg] max-md:w-[min(88vw,360px)] max-md:translate-y-[clamp(48px,12vh,96px)] max-md:rotate-[16deg] sm:w-[min(95vw,1020px)] lg:w-[min(90vw,912px)]">
         <Image
           src="/figma/zine-225-hero.gif"
           alt=""

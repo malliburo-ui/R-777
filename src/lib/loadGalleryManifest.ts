@@ -3,7 +3,7 @@ import path from "node:path";
 
 import type { GalleryManifest } from "@/lib/gallery";
 
-export function loadGalleryManifest(folder: "cases" | "drawings"): GalleryManifest {
+export function loadGalleryManifest(folder: "cases" | "drawings" | "mind" | "cv-cube"): GalleryManifest {
   const manifestPath = path.join(process.cwd(), `public/${folder}/${folder}.json`);
 
   try {

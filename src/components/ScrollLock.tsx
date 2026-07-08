@@ -2,35 +2,50 @@
 
 import { useEffect } from "react";
 
-/** Locks page scroll — for full-screen static hero layouts. */
+/** Locks page scroll on desktop — mobile uses its own scroll layer for CASES. */
 export function ScrollLock() {
   useEffect(() => {
-    const html = document.documentElement;
-    const { body } = document;
+    const media = window.matchMedia("(min-width: 1024px)");
 
-    const prevHtmlOverflow = html.style.overflow;
-    const prevBodyOverflow = body.style.overflow;
-    const prevBodyPosition = body.style.position;
-    const prevBodyInset = body.style.inset;
-    const prevBodyWidth = body.style.width;
-    const prevOverscroll = html.style.overscrollBehavior;
+    const apply = () => {
+      const html = document.documentElement;
+      const { body } = document;
 
-    html.style.overflow = "hidden";
-    html.style.overscrollBehavior = "none";
-    body.style.overflow = "hidden";
-    body.style.overscrollBehavior = "none";
-    body.style.position = "fixed";
-    body.style.inset = "0";
-    body.style.width = "100%";
+      if (!media.matches) {
+        html.style.overflow = "";
+        html.style.overscrollBehavior = "";
+        body.style.overflow = "";
+        body.style.overscrollBehavior = "";
+        body.style.position = "";
+        body.style.inset = "";
+        body.style.width = "";
+        return;
+      }
+
+      html.style.overflow = "hidden";
+      html.style.overscrollBehavior = "none";
+      body.style.overflow = "hidden";
+      body.style.overscrollBehavior = "none";
+      body.style.position = "fixed";
+      body.style.inset = "0";
+      body.style.width = "100%";
+    };
+
+    apply();
+    media.addEventListener("change", apply);
 
     return () => {
-      html.style.overflow = prevHtmlOverflow;
-      html.style.overscrollBehavior = prevOverscroll;
-      body.style.overflow = prevBodyOverflow;
+      media.removeEventListener("change", apply);
+
+      const html = document.documentElement;
+      const { body } = document;
+      html.style.overflow = "";
+      html.style.overscrollBehavior = "";
+      body.style.overflow = "";
       body.style.overscrollBehavior = "";
-      body.style.position = prevBodyPosition;
-      body.style.inset = prevBodyInset;
-      body.style.width = prevBodyWidth;
+      body.style.position = "";
+      body.style.inset = "";
+      body.style.width = "";
     };
   }, []);
 

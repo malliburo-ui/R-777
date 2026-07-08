@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <>
       <ScrollLock />
-      <main className="fixed inset-0 h-dvh w-full overflow-hidden overscroll-none">
+      <main className="relative min-h-dvh w-full overscroll-none lg:fixed lg:inset-0 lg:h-dvh lg:overflow-hidden">
         <Zine218Hero cases={cases} drawings={drawings} />
       </main>
     </>
