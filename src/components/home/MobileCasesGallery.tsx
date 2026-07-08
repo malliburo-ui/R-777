@@ -7,10 +7,13 @@ import {
   dispatchMobileFilterCycle,
   MOBILE_CONTROLS_ROOT_ID,
   MOBILE_CONTROLS_Z,
+  MOBILE_FAN_D_SOURCE,
+  MOBILE_FILTER_D_INDEX,
 } from "@/components/home/MobileHomeControls";
 import { galleryImagePath, type GalleryEntry } from "@/lib/gallery";
+import { useMobileFilterIndex } from "@/hooks/useMobileFilterIndex";
 
-const GALLERY_ASSET_VERSION = "24";
+const GALLERY_ASSET_VERSION = "26";
 const PRELOAD_RADIUS = 2;
 const MOBILE_IMAGE_BASE = "/cases/Mobile";
 const MOBILE_FAN_SOURCE = "21.gif";
@@ -36,6 +39,14 @@ function mobileImageSrc(filename: string) {
 
 function isFanImage(filename: string) {
   return filename === MOBILE_FAN_SOURCE;
+}
+
+function resolveFanFilename(activeFilterIndex: number | null) {
+  if (activeFilterIndex === MOBILE_FILTER_D_INDEX) {
+    return MOBILE_FAN_D_SOURCE;
+  }
+
+  return MOBILE_FAN_SOURCE;
 }
 
 function isControlsHit(target: EventTarget | null) {
@@ -68,6 +79,7 @@ type MobileCasesGalleryProps = {
 };
 
 export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
+  const activeFilterIndex = useMobileFilterIndex();
   const [activeIndex, setActiveIndex] = useState(0);
   const [scrollStep, setScrollStep] = useState(readScrollStep);
   const [yellowOverlayActive, setYellowOverlayActive] = useState(false);
@@ -138,6 +150,11 @@ export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
       }
     }
   }, [activeIndex, items]);
+
+  useEffect(() => {
+    preloadGalleryImage(MOBILE_FAN_SOURCE, "low");
+    preloadGalleryImage(MOBILE_FAN_D_SOURCE, "low");
+  }, []);
 
   useEffect(() => {
     setPortalReady(true);
@@ -280,8 +297,12 @@ export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
     return null;
   }
 
-  const imageSrc = mobileImageSrc(active.image);
   const fanImage = isFanImage(active.image);
+  const imageSrc = fanImage
+    ? mobileImageSrc(resolveFanFilename(activeFilterIndex))
+    : mobileImageSrc(active.image);
+  const useFanScreenBlend =
+    fanImage && activeFilterIndex !== MOBILE_FILTER_D_INDEX;
 
   return (
     <>
@@ -315,13 +336,13 @@ export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
         <div className="pointer-events-none flex h-full w-full items-end justify-center leading-[0]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            key={active.image}
+            key={fanImage ? `fan-${activeFilterIndex ?? "default"}` : active.image}
             src={imageSrc}
             alt={active.title}
             className="pointer-events-none block h-auto max-h-full w-full object-contain object-bottom"
             style={{
               width: "100vw",
-              ...(fanImage ? { mixBlendMode: "screen" } : {}),
+              ...(useFanScreenBlend ? { mixBlendMode: "screen" } : {}),
             }}
             decoding="async"
             fetchPriority="high"
