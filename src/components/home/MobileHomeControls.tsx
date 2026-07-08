@@ -11,6 +11,8 @@ export const MOBILE_CONTROLS_Z = 100_000;
 export const MOBILE_FILTER_CYCLE_EVENT = "portfolio:mobile-filter-cycle";
 
 const inset = "clamp(10px, 1.5vw, 16px)";
+const CV_NOTION_URL =
+  "https://malliburo.notion.site/Valeriy-Kolpaschikov-UI-UX-designer-9b361fde1ba749a6b58b65946d9418bf?pvs=4";
 const DEFAULT_MOBILE_BG = "#232003";
 const DEFAULT_MOBILE_FG = "#c7c7c7";
 const CYCLE_COOLDOWN_MS = 350;
@@ -122,8 +124,10 @@ export function MobileHomeControls() {
         pointerEvents: "none",
       }}
     >
-      <button
-        type="button"
+      <a
+        href={CV_NOTION_URL}
+        target="_blank"
+        rel="noopener noreferrer"
         aria-label="CV"
         onPointerDown={() => setCvPressed(true)}
         onPointerUp={() => setCvPressed(false)}
@@ -152,10 +156,11 @@ export function MobileHomeControls() {
           transform: `scale(${cvPressed ? 2 : 1})`,
           transformOrigin: "top right",
           transition: "transform 200ms ease-out",
+          textDecoration: "none",
         }}
       >
         CV!
-      </button>
+      </a>
     </div>,
     document.body,
   );
