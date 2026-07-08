@@ -12,7 +12,6 @@ export const metadata: Metadata = {
   title: "Visual researcher — portfolio",
   description:
     "Hi. I'm a visual researcher. I'm always rushing to explore the world through the dialogue between the hand, the mind, and the way we perceive.",
-  themeColor: "#232003",
 };
 
 export const viewport: Viewport = {

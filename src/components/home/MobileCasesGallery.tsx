@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import {
-  dispatchMobileRedToggle,
+  dispatchMobileFilterCycle,
   MOBILE_CONTROLS_ROOT_ID,
   MOBILE_CONTROLS_Z,
 } from "@/components/home/MobileHomeControls";
@@ -211,7 +211,7 @@ export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
         Math.abs(deltaX) < TAP_THRESHOLD &&
         Math.abs(deltaY) < TAP_THRESHOLD
       ) {
-        dispatchMobileRedToggle();
+        dispatchMobileFilterCycle();
         gesture = "none";
         return;
       }

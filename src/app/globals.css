@@ -3,7 +3,6 @@
 :root {
   --portfolio-bg: #232003;
   --portfolio-fg: #c7c7c7;
-  --filter-a-color: #ff2600;
 }
 
 @theme inline {
@@ -16,7 +15,6 @@ html,
 body {
   margin: 0;
   height: 100%;
-  background-color: var(--portfolio-bg);
 }
 
 ::selection {
