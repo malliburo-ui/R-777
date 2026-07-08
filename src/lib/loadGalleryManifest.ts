@@ -19,3 +19,20 @@ export function loadGalleryManifest(folder: "cases" | "drawings" | "mind" | "cv-
     return { items: [] };
   }
 }
+
+export function loadMobileCasesManifest(): GalleryManifest {
+  const manifestPath = path.join(process.cwd(), "public/cases/Mobile/mobile.json");
+
+  try {
+    const raw = fs.readFileSync(manifestPath, "utf8");
+    const data = JSON.parse(raw) as GalleryManifest;
+
+    if (!Array.isArray(data.items)) {
+      return { items: [] };
+    }
+
+    return data;
+  } catch {
+    return { items: [] };
+  }
+}

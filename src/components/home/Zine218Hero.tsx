@@ -11,9 +11,10 @@ const CV_NOTION_URL =
 type Zine218HeroProps = {
   cases: GalleryEntry[];
   drawings: GalleryEntry[];
+  mobileCases: GalleryEntry[];
 };
 
-export function Zine218Hero({ cases, drawings }: Zine218HeroProps) {
+export function Zine218Hero({ cases, drawings, mobileCases }: Zine218HeroProps) {
   return (
     <section
       className="relative h-dvh w-full bg-portfolio-bg text-portfolio-fg lg:fixed lg:inset-0 lg:overflow-hidden"
@@ -24,7 +25,7 @@ export function Zine218Hero({ cases, drawings }: Zine218HeroProps) {
       </div>
 
       <div className="hidden max-lg:contents">
-        <MobileCasesGallery items={cases} />
+        <MobileCasesGallery items={mobileCases} />
       </div>
 
       <div className="pointer-events-none absolute inset-0 z-[70] max-lg:z-[20]">

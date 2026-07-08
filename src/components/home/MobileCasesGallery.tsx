@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import {
@@ -10,9 +10,9 @@ import {
 } from "@/components/home/MobileHomeControls";
 import { galleryImagePath, type GalleryEntry } from "@/lib/gallery";
 
-const GALLERY_ASSET_VERSION = "22";
+const GALLERY_ASSET_VERSION = "24";
 const PRELOAD_RADIUS = 2;
-const MOBILE_FAN_WEB_IMAGE = "21.webp";
+const MOBILE_IMAGE_BASE = "/cases/Mobile";
 const MOBILE_FAN_SOURCE = "21.gif";
 const SWIPE_THRESHOLD = 48;
 const TAP_THRESHOLD = 16;
@@ -21,26 +21,6 @@ const MOBILE_GALLERY_Z = 30;
 const MOBILE_YELLOW_Z = MOBILE_CONTROLS_Z - 1;
 const SCROLL_STEP_RATIO = 0.14;
 const MIN_SCROLL_STEP = 64;
-
-function findFanIndex(items: GalleryEntry[]) {
-  const byImage = items.findIndex(
-    (item) => item.image === MOBILE_FAN_WEB_IMAGE || item.image === MOBILE_FAN_SOURCE,
-  );
-  if (byImage >= 0) {
-    return byImage;
-  }
-
-  return Math.max(0, items.length - 1);
-}
-
-function orderItemsWithFanFirst(items: GalleryEntry[], fanIndex: number) {
-  const fanItem = items[fanIndex];
-  if (!fanItem) {
-    return items;
-  }
-
-  return [fanItem, ...items.filter((_, index) => index !== fanIndex)];
-}
 
 function readScrollStep() {
   if (typeof window === "undefined") {
@@ -51,15 +31,11 @@ function readScrollStep() {
 }
 
 function mobileImageSrc(filename: string) {
-  if (filename === MOBILE_FAN_WEB_IMAGE || filename === MOBILE_FAN_SOURCE) {
-    return `${galleryImagePath("/cases/images", MOBILE_FAN_SOURCE)}?v=${GALLERY_ASSET_VERSION}`;
-  }
-
-  return `${galleryImagePath("/cases/web", filename)}?v=${GALLERY_ASSET_VERSION}`;
+  return `${galleryImagePath(MOBILE_IMAGE_BASE, filename)}?v=${GALLERY_ASSET_VERSION}`;
 }
 
 function isFanImage(filename: string) {
-  return filename === MOBILE_FAN_WEB_IMAGE || filename === MOBILE_FAN_SOURCE;
+  return filename === MOBILE_FAN_SOURCE;
 }
 
 function isControlsHit(target: EventTarget | null) {
@@ -73,9 +49,7 @@ function isControlsHit(target: EventTarget | null) {
 const preloaded = new Set<string>();
 
 function preloadGalleryImage(filename: string, priority: "high" | "low" = "low") {
-  const url = isFanImage(filename)
-    ? mobileImageSrc(filename)
-    : `${galleryImagePath("/cases/web", filename)}?v=${GALLERY_ASSET_VERSION}`;
+  const url = mobileImageSrc(filename);
   if (preloaded.has(url)) {
     return;
   }
@@ -94,11 +68,6 @@ type MobileCasesGalleryProps = {
 };
 
 export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
-  const fanIndex = findFanIndex(items);
-  const orderedItems = useMemo(
-    () => orderItemsWithFanFirst(items, fanIndex),
-    [items, fanIndex],
-  );
   const [activeIndex, setActiveIndex] = useState(0);
   const [scrollStep, setScrollStep] = useState(readScrollStep);
   const [yellowOverlayActive, setYellowOverlayActive] = useState(false);
@@ -106,8 +75,8 @@ export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollStepRef = useRef(scrollStep);
 
-  const count = orderedItems.length;
-  const active = orderedItems[activeIndex];
+  const count = items.length;
+  const active = items[activeIndex];
 
   useEffect(() => {
     scrollStepRef.current = scrollStep;
@@ -149,26 +118,26 @@ export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
 
     scrollEl.scrollTop = 0;
     setActiveIndex(0);
-  }, [orderedItems]);
+  }, [items]);
 
   useEffect(() => {
-    if (orderedItems.length === 0) {
+    if (items.length === 0) {
       return;
     }
 
     for (let offset = 0; offset <= PRELOAD_RADIUS; offset += 1) {
       for (const index of [activeIndex - offset, activeIndex + offset]) {
-        if (index < 0 || index >= orderedItems.length) {
+        if (index < 0 || index >= items.length) {
           continue;
         }
 
         preloadGalleryImage(
-          orderedItems[index].image,
+          items[index].image,
           index === activeIndex ? "high" : "low",
         );
       }
     }
-  }, [activeIndex, orderedItems]);
+  }, [activeIndex, items]);
 
   useEffect(() => {
     setPortalReady(true);
@@ -363,11 +332,11 @@ export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
 
       <div
         ref={scrollRef}
-        className="fixed inset-0 overflow-y-scroll overscroll-none touch-pan-y max-lg:block lg:hidden"
+        className="fixed inset-0 overflow-y-scroll overscroll-none touch-pan-y [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden max-lg:block lg:hidden"
         style={{ zIndex: MOBILE_GALLERY_Z }}
         aria-hidden
       >
-        {orderedItems.map((item) => (
+        {items.map((item) => (
           <div
             key={item.id}
             className="pointer-events-none shrink-0"
