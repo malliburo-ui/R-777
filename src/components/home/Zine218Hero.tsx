@@ -1,6 +1,6 @@
 import { HeroGif } from "@/components/home/HeroGif";
 import { HomeGalleries } from "@/components/home/HomeGalleries";
-import { MobileCasesGallery } from "@/components/home/MobileCasesGallery";
+import { MobileCasesGalleryClient } from "@/components/home/MobileCasesGalleryClient";
 import { MobileHomeControls } from "@/components/home/MobileHomeControls";
 import type { GalleryEntry } from "@/lib/gallery";
 
@@ -25,7 +25,7 @@ export function Zine218Hero({ cases, drawings, mobileCases }: Zine218HeroProps) 
       </div>
 
       <div className="hidden max-lg:contents">
-        <MobileCasesGallery items={mobileCases} />
+        <MobileCasesGalleryClient items={mobileCases} />
       </div>
 
       <div className="pointer-events-none absolute inset-0 z-[70] max-lg:z-[20]">

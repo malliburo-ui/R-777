@@ -7,11 +7,8 @@ import {
   dispatchMobileFilterCycle,
   MOBILE_CONTROLS_ROOT_ID,
   MOBILE_CONTROLS_Z,
-  MOBILE_FAN_D_SOURCE,
-  MOBILE_FILTER_D_INDEX,
 } from "@/components/home/MobileHomeControls";
 import { galleryImagePath, type GalleryEntry } from "@/lib/gallery";
-import { useMobileFilterIndex } from "@/hooks/useMobileFilterIndex";
 
 const GALLERY_ASSET_VERSION = "26";
 const PRELOAD_RADIUS = 2;
@@ -24,13 +21,13 @@ const MOBILE_GALLERY_Z = 30;
 const MOBILE_YELLOW_Z = MOBILE_CONTROLS_Z - 1;
 const SCROLL_STEP_RATIO = 0.14;
 const MIN_SCROLL_STEP = 64;
+const DEFAULT_SCROLL_STEP = 96;
 
 function readScrollStep() {
-  if (typeof window === "undefined") {
-    return 96;
-  }
-
-  return Math.max(MIN_SCROLL_STEP, Math.round(window.innerHeight * SCROLL_STEP_RATIO));
+  return Math.max(
+    MIN_SCROLL_STEP,
+    Math.round(window.innerHeight * SCROLL_STEP_RATIO),
+  );
 }
 
 function mobileImageSrc(filename: string) {
@@ -39,14 +36,6 @@ function mobileImageSrc(filename: string) {
 
 function isFanImage(filename: string) {
   return filename === MOBILE_FAN_SOURCE;
-}
-
-function resolveFanFilename(activeFilterIndex: number | null) {
-  if (activeFilterIndex === MOBILE_FILTER_D_INDEX) {
-    return MOBILE_FAN_D_SOURCE;
-  }
-
-  return MOBILE_FAN_SOURCE;
 }
 
 function isControlsHit(target: EventTarget | null) {
@@ -79,9 +68,8 @@ type MobileCasesGalleryProps = {
 };
 
 export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
-  const activeFilterIndex = useMobileFilterIndex();
   const [activeIndex, setActiveIndex] = useState(0);
-  const [scrollStep, setScrollStep] = useState(readScrollStep);
+  const [scrollStep, setScrollStep] = useState(DEFAULT_SCROLL_STEP);
   const [yellowOverlayActive, setYellowOverlayActive] = useState(false);
   const [portalReady, setPortalReady] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -153,7 +141,6 @@ export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
 
   useEffect(() => {
     preloadGalleryImage(MOBILE_FAN_SOURCE, "low");
-    preloadGalleryImage(MOBILE_FAN_D_SOURCE, "low");
   }, []);
 
   useEffect(() => {
@@ -298,11 +285,7 @@ export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
   }
 
   const fanImage = isFanImage(active.image);
-  const imageSrc = fanImage
-    ? mobileImageSrc(resolveFanFilename(activeFilterIndex))
-    : mobileImageSrc(active.image);
-  const useFanScreenBlend =
-    fanImage && activeFilterIndex !== MOBILE_FILTER_D_INDEX;
+  const imageSrc = fanImage ? mobileImageSrc(MOBILE_FAN_SOURCE) : mobileImageSrc(active.image);
 
   return (
     <>
@@ -336,13 +319,13 @@ export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
         <div className="pointer-events-none flex h-full w-full items-end justify-center leading-[0]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            key={fanImage ? `fan-${activeFilterIndex ?? "default"}` : active.image}
+            key={fanImage ? "fan" : active.image}
             src={imageSrc}
             alt={active.title}
             className="pointer-events-none block h-auto max-h-full w-full object-contain object-bottom"
             style={{
               width: "100vw",
-              ...(useFanScreenBlend ? { mixBlendMode: "screen" } : {}),
+              ...(fanImage ? { mixBlendMode: "screen" } : {}),
             }}
             decoding="async"
             fetchPriority="high"
