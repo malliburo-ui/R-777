@@ -8,7 +8,7 @@ const inset = "clamp(10px, 1.5vw, 16px)";
 const WHEEL_THRESHOLD = 36;
 const STEP_COOLDOWN_MS = 90;
 const PRELOAD_RADIUS = 2;
-const GALLERY_ASSET_VERSION = "21";
+const GALLERY_ASSET_VERSION = "22";
 
 type SideScrollGalleryProps = {
   side: "left" | "right";

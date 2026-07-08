@@ -10,9 +10,10 @@ import {
 } from "@/components/home/MobileHomeControls";
 import { galleryImagePath, type GalleryEntry } from "@/lib/gallery";
 
-const GALLERY_ASSET_VERSION = "21";
+const GALLERY_ASSET_VERSION = "22";
 const PRELOAD_RADIUS = 2;
-const MOBILE_FAN_IMAGE = "21.webp";
+const MOBILE_FAN_WEB_IMAGE = "21.webp";
+const MOBILE_FAN_SOURCE = "21.gif";
 const SWIPE_THRESHOLD = 48;
 const TAP_THRESHOLD = 16;
 const YELLOW_OVERLAY = "#FFE600";
@@ -20,12 +21,26 @@ const MOBILE_GALLERY_Z = 30;
 const MOBILE_YELLOW_Z = MOBILE_CONTROLS_Z - 1;
 
 function findFanIndex(items: GalleryEntry[]) {
-  const byImage = items.findIndex((item) => item.image === MOBILE_FAN_IMAGE);
+  const byImage = items.findIndex(
+    (item) => item.image === MOBILE_FAN_WEB_IMAGE || item.image === MOBILE_FAN_SOURCE,
+  );
   if (byImage >= 0) {
     return byImage;
   }
 
   return Math.max(0, items.length - 1);
+}
+
+function mobileImageSrc(filename: string) {
+  if (filename === MOBILE_FAN_WEB_IMAGE || filename === MOBILE_FAN_SOURCE) {
+    return `${galleryImagePath("/cases/images", MOBILE_FAN_SOURCE)}?v=${GALLERY_ASSET_VERSION}`;
+  }
+
+  return `${galleryImagePath("/cases/web", filename)}?v=${GALLERY_ASSET_VERSION}`;
+}
+
+function isFanImage(filename: string) {
+  return filename === MOBILE_FAN_WEB_IMAGE || filename === MOBILE_FAN_SOURCE;
 }
 
 function isControlsHit(target: EventTarget | null) {
@@ -39,7 +54,9 @@ function isControlsHit(target: EventTarget | null) {
 const preloaded = new Set<string>();
 
 function preloadGalleryImage(filename: string, priority: "high" | "low" = "low") {
-  const url = `${galleryImagePath("/cases/web", filename)}?v=${GALLERY_ASSET_VERSION}`;
+  const url = isFanImage(filename)
+    ? mobileImageSrc(filename)
+    : `${galleryImagePath("/cases/web", filename)}?v=${GALLERY_ASSET_VERSION}`;
   if (preloaded.has(url)) {
     return;
   }
@@ -256,7 +273,8 @@ export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
     return null;
   }
 
-  const imageSrc = `${galleryImagePath("/cases/web", active.image)}?v=${GALLERY_ASSET_VERSION}`;
+  const imageSrc = mobileImageSrc(active.image);
+  const fanImage = isFanImage(active.image);
 
   return (
     <>
@@ -294,7 +312,10 @@ export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
             src={imageSrc}
             alt={active.title}
             className="pointer-events-none block h-auto max-h-full w-full object-contain object-bottom"
-            style={{ width: "100vw" }}
+            style={{
+              width: "100vw",
+              ...(fanImage ? { mixBlendMode: "screen" } : {}),
+            }}
             decoding="async"
             fetchPriority="high"
             draggable={false}
