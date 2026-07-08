@@ -16,9 +16,8 @@ const CYCLE_COOLDOWN_MS = 350;
 
 export const MOBILE_FILTERS = [
   { id: "A", name: "Фильтр А", color: "#FF2600" },
-  { id: "B", name: "Фильтр B", color: "#4DFF00" },
-  { id: "C", name: "Фильтр C", color: "#A1FF00" },
-  { id: "D", name: "Фильтр D", color: "#232003" },
+  { id: "B", name: "Фильтр B", color: "#0000FF" },
+  { id: "C", name: "Фильтр C", color: "#232003" },
 ] as const;
 
 export function dispatchMobileFilterCycle() {

@@ -67,8 +67,7 @@ function main() {
   }
 
   const items = sourceFiles.map((sourceName) => {
-    const isGif = /\.gif$/i.test(sourceName);
-    const webName = isGif ? sourceName : sourceName.replace(/\.(png|jpe?g)$/i, ".webp");
+    const webName = sourceName.replace(/\.(png|jpe?g|gif)$/i, ".webp");
     const override = meta[sourceName] ?? meta[webName] ?? {};
     return {
       id: override.id ?? idFromFilename(sourceName),

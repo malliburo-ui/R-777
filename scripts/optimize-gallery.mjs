@@ -50,14 +50,26 @@ async function optimizeFolder(folder) {
   for (const sourceName of sources) {
     const sourcePath = path.join(sourceDir, sourceName);
     const isGif = SOURCE_GIF.test(sourceName);
-    const webName = isGif ? sourceName : sourceName.replace(SOURCE_RASTER, ".webp");
+    const webName = sourceName.replace(/\.(png|jpe?g|gif)$/i, ".webp");
     const webPath = path.join(webDir, webName);
     activeWebNames.add(webName);
 
     if (isGif) {
-      fs.copyFileSync(sourcePath, webPath);
-      const size = fs.statSync(sourcePath).size;
-      console.log(`  ${sourceName} → web/${webName} (${formatBytes(size)}, copied)`);
+      await sharp(sourcePath, { animated: true, pages: -1 })
+        .webp({
+          quality: WEBP_QUALITY,
+          alphaQuality: 100,
+          effort: 4,
+        })
+        .toFile(webPath);
+
+      const sourceSize = fs.statSync(sourcePath).size;
+      const webSize = fs.statSync(webPath).size;
+      savedBytes += Math.max(0, sourceSize - webSize);
+
+      console.log(
+        `  ${sourceName} → web/${webName} (${formatBytes(sourceSize)} → ${formatBytes(webSize)}, animated)`,
+      );
       continue;
     }
 

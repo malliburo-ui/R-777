@@ -10,9 +10,9 @@ import {
 } from "@/components/home/MobileHomeControls";
 import { galleryImagePath, type GalleryEntry } from "@/lib/gallery";
 
-const GALLERY_ASSET_VERSION = "18";
+const GALLERY_ASSET_VERSION = "21";
 const PRELOAD_RADIUS = 2;
-const MOBILE_FAN_IMAGE = "21.gif";
+const MOBILE_FAN_IMAGE = "21.webp";
 const SWIPE_THRESHOLD = 48;
 const TAP_THRESHOLD = 16;
 const YELLOW_OVERLAY = "#FFE600";
