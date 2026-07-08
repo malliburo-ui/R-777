@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import {
+  dispatchMobileRedToggle,
   MOBILE_CONTROLS_ROOT_ID,
   MOBILE_CONTROLS_Z,
 } from "@/components/home/MobileHomeControls";
@@ -13,6 +14,7 @@ const GALLERY_ASSET_VERSION = "18";
 const PRELOAD_RADIUS = 2;
 const MOBILE_FAN_IMAGE = "21.gif";
 const SWIPE_THRESHOLD = 48;
+const TAP_THRESHOLD = 16;
 const YELLOW_OVERLAY = "#FFE600";
 const MOBILE_GALLERY_Z = 30;
 const MOBILE_YELLOW_Z = MOBILE_CONTROLS_Z - 1;
@@ -192,13 +194,24 @@ export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
 
       const deltaX = endTouch.clientX - startX;
       const deltaY = endTouch.clientY - startY;
+      const finishedGesture = gesture;
 
       if (
-        gesture === "horizontal" &&
+        finishedGesture === "horizontal" &&
         deltaX >= SWIPE_THRESHOLD &&
         Math.abs(deltaX) > Math.abs(deltaY)
       ) {
         setYellowOverlayActive(true);
+        gesture = "none";
+        return;
+      }
+
+      if (
+        finishedGesture === "none" &&
+        Math.abs(deltaX) < TAP_THRESHOLD &&
+        Math.abs(deltaY) < TAP_THRESHOLD
+      ) {
+        dispatchMobileRedToggle();
         gesture = "none";
         return;
       }
