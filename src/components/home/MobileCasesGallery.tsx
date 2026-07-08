@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import {
@@ -19,6 +19,8 @@ const TAP_THRESHOLD = 16;
 const YELLOW_OVERLAY = "#FFE600";
 const MOBILE_GALLERY_Z = 30;
 const MOBILE_YELLOW_Z = MOBILE_CONTROLS_Z - 1;
+const SCROLL_STEP_RATIO = 0.14;
+const MIN_SCROLL_STEP = 64;
 
 function findFanIndex(items: GalleryEntry[]) {
   const byImage = items.findIndex(
@@ -29,6 +31,23 @@ function findFanIndex(items: GalleryEntry[]) {
   }
 
   return Math.max(0, items.length - 1);
+}
+
+function orderItemsWithFanFirst(items: GalleryEntry[], fanIndex: number) {
+  const fanItem = items[fanIndex];
+  if (!fanItem) {
+    return items;
+  }
+
+  return [fanItem, ...items.filter((_, index) => index !== fanIndex)];
+}
+
+function readScrollStep() {
+  if (typeof window === "undefined") {
+    return 96;
+  }
+
+  return Math.max(MIN_SCROLL_STEP, Math.round(window.innerHeight * SCROLL_STEP_RATIO));
 }
 
 function mobileImageSrc(filename: string) {
@@ -76,13 +95,36 @@ type MobileCasesGalleryProps = {
 
 export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
   const fanIndex = findFanIndex(items);
-  const [activeIndex, setActiveIndex] = useState(fanIndex);
+  const orderedItems = useMemo(
+    () => orderItemsWithFanFirst(items, fanIndex),
+    [items, fanIndex],
+  );
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [scrollStep, setScrollStep] = useState(readScrollStep);
   const [yellowOverlayActive, setYellowOverlayActive] = useState(false);
   const [portalReady, setPortalReady] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollStepRef = useRef(scrollStep);
 
-  const count = items.length;
-  const active = items[activeIndex];
+  const count = orderedItems.length;
+  const active = orderedItems[activeIndex];
+
+  useEffect(() => {
+    scrollStepRef.current = scrollStep;
+  }, [scrollStep]);
+
+  useEffect(() => {
+    const updateScrollStep = () => {
+      setScrollStep(readScrollStep());
+    };
+
+    updateScrollStep();
+    window.addEventListener("resize", updateScrollStep);
+
+    return () => {
+      window.removeEventListener("resize", updateScrollStep);
+    };
+  }, []);
 
   const syncIndexFromScroll = useCallback(() => {
     const scrollEl = scrollRef.current;
@@ -90,47 +132,43 @@ export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
       return;
     }
 
-    const pageHeight = scrollEl.clientHeight;
-    if (pageHeight <= 0) {
+    const step = scrollStepRef.current;
+    if (step <= 0) {
       return;
     }
 
-    const nextIndex = Math.round(scrollEl.scrollTop / pageHeight);
+    const nextIndex = Math.round(scrollEl.scrollTop / step);
     setActiveIndex(Math.min(count - 1, Math.max(0, nextIndex)));
   }, [count]);
 
   useEffect(() => {
     const scrollEl = scrollRef.current;
-    if (!scrollEl || fanIndex <= 0) {
+    if (!scrollEl) {
       return;
     }
 
-    const pageHeight = scrollEl.clientHeight;
-    if (pageHeight <= 0) {
-      return;
-    }
-
-    scrollEl.scrollTop = fanIndex * pageHeight;
-  }, [fanIndex]);
+    scrollEl.scrollTop = 0;
+    setActiveIndex(0);
+  }, [orderedItems]);
 
   useEffect(() => {
-    if (items.length === 0) {
+    if (orderedItems.length === 0) {
       return;
     }
 
     for (let offset = 0; offset <= PRELOAD_RADIUS; offset += 1) {
       for (const index of [activeIndex - offset, activeIndex + offset]) {
-        if (index < 0 || index >= items.length) {
+        if (index < 0 || index >= orderedItems.length) {
           continue;
         }
 
         preloadGalleryImage(
-          items[index].image,
+          orderedItems[index].image,
           index === activeIndex ? "high" : "low",
         );
       }
     }
-  }, [activeIndex, items]);
+  }, [activeIndex, orderedItems]);
 
   useEffect(() => {
     setPortalReady(true);
@@ -241,14 +279,14 @@ export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
 
       syncIndexFromScroll();
 
-      const pageHeight = scrollEl.clientHeight;
-      if (pageHeight <= 0) {
+      const step = scrollStepRef.current;
+      if (step <= 0) {
         return;
       }
 
-      const snappedIndex = Math.round(scrollEl.scrollTop / pageHeight);
+      const snappedIndex = Math.round(scrollEl.scrollTop / step);
       scrollEl.scrollTo({
-        top: snappedIndex * pageHeight,
+        top: snappedIndex * step,
         behavior: "smooth",
       });
     };
@@ -329,8 +367,13 @@ export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
         style={{ zIndex: MOBILE_GALLERY_Z }}
         aria-hidden
       >
-        {items.map((item) => (
-          <div key={item.id} className="pointer-events-none h-dvh shrink-0" aria-hidden />
+        {orderedItems.map((item) => (
+          <div
+            key={item.id}
+            className="pointer-events-none shrink-0"
+            style={{ height: scrollStep }}
+            aria-hidden
+          />
         ))}
       </div>
     </>

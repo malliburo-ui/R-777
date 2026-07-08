@@ -16,7 +16,7 @@ type Zine218HeroProps = {
 export function Zine218Hero({ cases, drawings }: Zine218HeroProps) {
   return (
     <section
-      className="relative h-dvh w-full overflow-hidden bg-portfolio-bg text-portfolio-fg lg:fixed lg:inset-0"
+      className="relative h-dvh w-full bg-portfolio-bg text-portfolio-fg lg:fixed lg:inset-0 lg:overflow-hidden"
       data-figma-node="1044:6983"
     >
       <div className="max-lg:hidden">

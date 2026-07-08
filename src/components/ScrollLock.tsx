@@ -2,66 +2,50 @@
 
 import { useEffect } from "react";
 
-const MOBILE_QUERIES = [
-  "(max-width: 1023px)",
-  "(hover: none) and (pointer: coarse)",
-] as const;
-
-function isMobileLayout() {
-  return MOBILE_QUERIES.some((query) => window.matchMedia(query).matches);
-}
-
-function lockPageScroll() {
-  const html = document.documentElement;
-  const { body } = document;
-
-  html.style.overflow = "hidden";
-  html.style.overscrollBehavior = "none";
-  html.style.height = "100%";
-  body.style.overflow = "hidden";
-  body.style.overscrollBehavior = "none";
-  body.style.position = "fixed";
-  body.style.inset = "0";
-  body.style.width = "100%";
-}
-
-function unlockPageScroll() {
-  const html = document.documentElement;
-  const { body } = document;
-
-  html.style.overflow = "";
-  html.style.overscrollBehavior = "";
-  html.style.height = "";
-  body.style.overflow = "";
-  body.style.overscrollBehavior = "";
-  body.style.position = "";
-  body.style.inset = "";
-  body.style.width = "";
-}
-
-/** Locks page scroll on desktop and mobile — mobile CASES use a separate layer. */
+/** Locks page scroll on desktop — mobile uses its own scroll layer for CASES. */
 export function ScrollLock() {
   useEffect(() => {
-    const desktopMedia = window.matchMedia("(min-width: 1024px)");
-    const mobileMedia = MOBILE_QUERIES.map((query) => window.matchMedia(query));
+    const media = window.matchMedia("(min-width: 1024px)");
 
     const apply = () => {
-      if (desktopMedia.matches || isMobileLayout()) {
-        lockPageScroll();
+      const html = document.documentElement;
+      const { body } = document;
+
+      if (!media.matches) {
+        html.style.overflow = "";
+        html.style.overscrollBehavior = "";
+        body.style.overflow = "";
+        body.style.overscrollBehavior = "";
+        body.style.position = "";
+        body.style.inset = "";
+        body.style.width = "";
         return;
       }
 
-      unlockPageScroll();
+      html.style.overflow = "hidden";
+      html.style.overscrollBehavior = "none";
+      body.style.overflow = "hidden";
+      body.style.overscrollBehavior = "none";
+      body.style.position = "fixed";
+      body.style.inset = "0";
+      body.style.width = "100%";
     };
 
     apply();
-    desktopMedia.addEventListener("change", apply);
-    mobileMedia.forEach((entry) => entry.addEventListener("change", apply));
+    media.addEventListener("change", apply);
 
     return () => {
-      desktopMedia.removeEventListener("change", apply);
-      mobileMedia.forEach((entry) => entry.removeEventListener("change", apply));
-      unlockPageScroll();
+      media.removeEventListener("change", apply);
+
+      const html = document.documentElement;
+      const { body } = document;
+      html.style.overflow = "";
+      html.style.overscrollBehavior = "";
+      body.style.overflow = "";
+      body.style.overscrollBehavior = "";
+      body.style.position = "";
+      body.style.inset = "";
+      body.style.width = "";
     };
   }, []);
 
