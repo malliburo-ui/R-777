@@ -30,7 +30,7 @@ export function Zine218Hero({ cases, drawings, mobileCases }: Zine218HeroProps) 
 
       <div className="pointer-events-none absolute inset-0 z-[70] max-lg:z-[20]">
         <p
-          className="pointer-events-none absolute left-0 top-0 max-w-[min(768px,calc(100vw-3rem))] font-medium leading-[0.96] tracking-[-0.03em] max-md:max-w-[calc(100vw-2*clamp(10px,1.5vw,16px))] text-[clamp(28px,7.6vw,42px)] md:text-[clamp(24px,5.2vw,52px)]"
+          className="pointer-events-none absolute left-0 top-0 max-w-[min(768px,calc(100vw-3rem))] font-medium leading-[0.96] tracking-[-0.03em] max-md:max-w-[calc(100vw-2*clamp(10px,1.5vw,16px))] text-[clamp(34px,7.6vw,48px)] md:text-[clamp(30px,5.2vw,58px)] lg:text-[clamp(24px,5.2vw,52px)]"
           style={{
             padding: inset,
           }}

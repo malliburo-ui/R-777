@@ -14,6 +14,7 @@ const GALLERY_ASSET_VERSION = "26";
 const PRELOAD_RADIUS = 2;
 const MOBILE_IMAGE_BASE = "/cases/Mobile";
 const MOBILE_FAN_SOURCE = "21.gif";
+const MOBILE_FLOWER_IMAGE = "zine-225-hero-transparent.gif";
 const SWIPE_THRESHOLD = 48;
 const TAP_THRESHOLD = 16;
 const YELLOW_OVERLAY = "#FFE600";
@@ -36,6 +37,10 @@ function mobileImageSrc(filename: string) {
 
 function isFanImage(filename: string) {
   return filename === MOBILE_FAN_SOURCE;
+}
+
+function isFlowerImage(filename: string) {
+  return filename === MOBILE_FLOWER_IMAGE;
 }
 
 function isControlsHit(target: EventTarget | null) {
@@ -285,6 +290,7 @@ export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
   }
 
   const fanImage = isFanImage(active.image);
+  const flowerImage = isFlowerImage(active.image);
   const imageSrc = fanImage ? mobileImageSrc(MOBILE_FAN_SOURCE) : mobileImageSrc(active.image);
 
   return (
@@ -326,6 +332,12 @@ export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
             style={{
               width: "100vw",
               ...(fanImage ? { mixBlendMode: "screen" } : {}),
+              ...(flowerImage
+                ? {
+                    transform: "scale(1.2) translateY(50px)",
+                    transformOrigin: "bottom center",
+                  }
+                : {}),
             }}
             decoding="async"
             fetchPriority="high"
