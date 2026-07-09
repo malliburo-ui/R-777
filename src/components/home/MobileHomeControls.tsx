@@ -144,7 +144,7 @@ export function MobileHomeControls() {
           background: "transparent",
           color: "var(--portfolio-fg)",
           fontFamily: "inherit",
-          fontWeight: 700,
+          fontWeight: 500,
           fontSize: "clamp(30px, 7.6vw, 44px)",
           lineHeight: 0.96,
           letterSpacing: "-0.03em",
