@@ -159,7 +159,7 @@ export function MobileHomeControls() {
           textDecoration: "none",
         }}
       >
-        CV!
+        cv
       </a>
     </div>,
     document.body,
