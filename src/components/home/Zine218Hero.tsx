@@ -53,7 +53,7 @@ export function Zine218Hero({ cases, drawings, mobileCases }: Zine218HeroProps) 
             fontSize: "clamp(18px, 2.79vw, 28.481px)",
           }}
         >
-          cv
+          CV!
         </a>
 
         <div className="pointer-events-auto max-lg:hidden">

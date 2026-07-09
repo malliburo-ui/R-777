@@ -144,9 +144,9 @@ export function MobileHomeControls() {
           background: "transparent",
           color: "var(--portfolio-fg)",
           fontFamily: "inherit",
-          fontWeight: 500,
-          fontSize: "clamp(30px, 7.6vw, 44px)",
-          lineHeight: 0.96,
+          fontWeight: 700,
+          fontSize: "clamp(18px, 2.79vw, 28.481px)",
+          lineHeight: 1,
           letterSpacing: "-0.03em",
           minWidth: 56,
           minHeight: 56,
@@ -159,7 +159,7 @@ export function MobileHomeControls() {
           textDecoration: "none",
         }}
       >
-        cv
+        CV!
       </a>
     </div>,
     document.body,
