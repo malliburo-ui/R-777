@@ -19,6 +19,15 @@ const DEFAULT_MOBILE_FG = "#c7c7c7";
 const MOBILE_FILTER_D_HEAD_IMAGE = "/cases/Mobile/mobile-filter-d-head.png?v=3";
 const MOBILE_FILTER_D_BG = "#232323";
 const CYCLE_COOLDOWN_MS = 350;
+const FILTER_HAPTIC_MS = 12;
+
+function triggerMobileFilterHaptic() {
+  if (typeof navigator === "undefined" || typeof navigator.vibrate !== "function") {
+    return;
+  }
+
+  navigator.vibrate(FILTER_HAPTIC_MS);
+}
 
 export const MOBILE_FILTERS = [
   { id: "B", name: "Фильтр B", kind: "color" as const, color: "#0000FF", textColor: DEFAULT_MOBILE_FG },
@@ -137,6 +146,7 @@ export function MobileHomeControls() {
     }
 
     lastCycleAtRef.current = now;
+    triggerMobileFilterHaptic();
     setActiveFilterIndex((current) => {
       if (current === null) {
         return 0;
