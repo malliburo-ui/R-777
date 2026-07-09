@@ -34,6 +34,19 @@ export const MOBILE_FILTERS = [
   },
 ] as const;
 
+const preloadedFilterImages = new Set<string>();
+
+function preloadMobileFilterImage(url: string) {
+  if (preloadedFilterImages.has(url)) {
+    return;
+  }
+
+  preloadedFilterImages.add(url);
+  const img = new window.Image();
+  img.decoding = "async";
+  img.src = url;
+}
+
 export function dispatchMobileFilterCycle() {
   if (typeof document === "undefined") {
     return;
@@ -108,6 +121,14 @@ export function MobileHomeControls() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!mounted || !isMobileLayout) {
+      return;
+    }
+
+    preloadMobileFilterImage(MOBILE_FILTER_D_HEAD_IMAGE);
+  }, [isMobileLayout, mounted]);
 
   const cycleFilter = useCallback(() => {
     const now = Date.now();
