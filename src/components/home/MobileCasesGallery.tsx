@@ -5,9 +5,9 @@ import { createPortal } from "react-dom";
 
 import {
   dispatchMobileFilterCycle,
-  MOBILE_CONTROLS_ROOT_ID,
   MOBILE_CONTROLS_Z,
 } from "@/components/home/MobileHomeControls";
+import { MOBILE_HERO_TEXT_ID } from "@/components/home/Zine218Hero";
 import { galleryImagePath, type GalleryEntry } from "@/lib/gallery";
 
 const GALLERY_ASSET_VERSION = "29";
@@ -43,12 +43,12 @@ function isFlowerImage(filename: string) {
   return filename === MOBILE_FLOWER_IMAGE;
 }
 
-function isControlsHit(target: EventTarget | null) {
+function isHeroTextHit(target: EventTarget | null) {
   if (!(target instanceof Element)) {
     return false;
   }
 
-  return Boolean(target.closest(`#${MOBILE_CONTROLS_ROOT_ID}`));
+  return Boolean(target.closest(`#${MOBILE_HERO_TEXT_ID}`));
 }
 
 function readMaxScroll(scrollEl: HTMLDivElement) {
@@ -180,7 +180,7 @@ export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
     let gesture: "none" | "vertical" | "horizontal" = "none";
 
     const onTouchStart = (event: TouchEvent) => {
-      if (event.touches.length !== 1 || isControlsHit(event.target)) {
+      if (event.touches.length !== 1 || isHeroTextHit(event.target)) {
         tracking = false;
         gesture = "none";
         return;
@@ -194,7 +194,7 @@ export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
     };
 
     const onTouchMove = (event: TouchEvent) => {
-      if (!tracking || isControlsHit(event.target)) {
+      if (!tracking || isHeroTextHit(event.target)) {
         tracking = false;
         gesture = "none";
         return;
