@@ -9,17 +9,37 @@ import { useIsMobileLayout } from "@/hooks/useIsMobileLayout";
 export const MOBILE_CONTROLS_ROOT_ID = "mobile-home-controls";
 export const MOBILE_CONTROLS_Z = 100_000;
 export const MOBILE_FILTER_CYCLE_EVENT = "portfolio:mobile-filter-cycle";
+export const MOBILE_FILTER_IMAGE_INDEX = 1;
 
 const inset = "clamp(10px, 1.5vw, 16px)";
 const CV_NOTION_URL =
   "https://malliburo.notion.site/Valeriy-Kolpaschikov-UI-UX-designer-9b361fde1ba749a6b58b65946d9418bf?pvs=4";
 const DEFAULT_MOBILE_BG = "#232003";
 const DEFAULT_MOBILE_FG = "#c7c7c7";
+const MOBILE_FILTER_BG_IMAGE = "/cases/Mobile/mobile-filter-bg.png?v=30";
+const MOBILE_FILTER_D_HEAD_IMAGE = "/cases/Mobile/mobile-filter-d-head.png?v=3";
+const MOBILE_FILTER_D_BG = "#232323";
 const CYCLE_COOLDOWN_MS = 350;
 
 export const MOBILE_FILTERS = [
-  { id: "B", name: "Фильтр B", color: "#0000FF", textColor: DEFAULT_MOBILE_FG },
-  { id: "C", name: "Фильтр C", color: "#232003", textColor: DEFAULT_MOBILE_FG },
+  { id: "B", name: "Фильтр B", kind: "color" as const, color: "#0000FF", textColor: DEFAULT_MOBILE_FG },
+  {
+    id: "C",
+    name: "Фильтр C",
+    kind: "image" as const,
+    color: DEFAULT_MOBILE_BG,
+    image: MOBILE_FILTER_BG_IMAGE,
+    textColor: DEFAULT_MOBILE_FG,
+  },
+  {
+    id: "D",
+    name: "Фильтр D",
+    kind: "image" as const,
+    color: MOBILE_FILTER_D_BG,
+    image: MOBILE_FILTER_D_HEAD_IMAGE,
+    imageSize: "contain",
+    textColor: DEFAULT_MOBILE_FG,
+  },
 ] as const;
 
 export function dispatchMobileFilterCycle() {
@@ -30,20 +50,59 @@ export function dispatchMobileFilterCycle() {
   document.dispatchEvent(new Event(MOBILE_FILTER_CYCLE_EVENT));
 }
 
-function resolveMobileBackground(activeFilterIndex: number | null) {
-  if (activeFilterIndex === null) {
-    return DEFAULT_MOBILE_BG;
-  }
-
-  return MOBILE_FILTERS[activeFilterIndex]?.color ?? DEFAULT_MOBILE_BG;
-}
-
 function resolveMobileForeground(activeFilterIndex: number | null) {
   if (activeFilterIndex === null) {
     return DEFAULT_MOBILE_FG;
   }
 
   return MOBILE_FILTERS[activeFilterIndex]?.textColor ?? DEFAULT_MOBILE_FG;
+}
+
+function clearMobileBackgroundStyles() {
+  document.documentElement.style.setProperty("--portfolio-bg", DEFAULT_MOBILE_BG);
+  document.documentElement.style.setProperty("--portfolio-fg", DEFAULT_MOBILE_FG);
+  document.documentElement.style.backgroundColor = "";
+  document.body.style.backgroundColor = "";
+  document.body.style.backgroundImage = "";
+  document.body.style.backgroundSize = "";
+  document.body.style.backgroundPosition = "";
+  document.body.style.backgroundRepeat = "";
+}
+
+function applyMobileBackground(activeFilterIndex: number | null) {
+  const foreground = resolveMobileForeground(activeFilterIndex);
+  document.documentElement.style.setProperty("--portfolio-fg", foreground);
+
+  if (activeFilterIndex === null) {
+    clearMobileBackgroundStyles();
+    return;
+  }
+
+  const filter = MOBILE_FILTERS[activeFilterIndex];
+  if (!filter) {
+    clearMobileBackgroundStyles();
+    return;
+  }
+
+  if (filter.kind === "image") {
+    document.documentElement.style.setProperty("--portfolio-bg", "transparent");
+    document.documentElement.style.backgroundColor = filter.color;
+    document.body.style.backgroundColor = filter.color;
+    document.body.style.backgroundImage = `url(${filter.image})`;
+    document.body.style.backgroundSize =
+      "imageSize" in filter && filter.imageSize ? filter.imageSize : "cover";
+    document.body.style.backgroundPosition = "center";
+    document.body.style.backgroundRepeat = "no-repeat";
+    return;
+  }
+
+  document.body.style.backgroundImage = "";
+  document.body.style.backgroundSize = "";
+  document.body.style.backgroundPosition = "";
+  document.body.style.backgroundRepeat = "";
+  document.documentElement.style.backgroundColor = "";
+  document.documentElement.style.setProperty("--portfolio-bg", filter.color);
+  document.body.style.backgroundColor = filter.color;
 }
 
 export function MobileHomeControls() {
@@ -69,7 +128,11 @@ export function MobileHomeControls() {
         return 0;
       }
 
-      return (current + 1) % MOBILE_FILTERS.length;
+      if (current >= MOBILE_FILTERS.length - 1) {
+        return null;
+      }
+
+      return current + 1;
     });
   }, []);
 
@@ -94,18 +157,11 @@ export function MobileHomeControls() {
       return;
     }
 
-    const background = resolveMobileBackground(activeFilterIndex);
-    const foreground = resolveMobileForeground(activeFilterIndex);
-
-    document.documentElement.style.setProperty("--portfolio-bg", background);
-    document.documentElement.style.setProperty("--portfolio-fg", foreground);
-    document.body.style.backgroundColor = background;
+    applyMobileBackground(activeFilterIndex);
     setMobileFilterIndex(activeFilterIndex);
 
     return () => {
-      document.documentElement.style.setProperty("--portfolio-bg", DEFAULT_MOBILE_BG);
-      document.documentElement.style.setProperty("--portfolio-fg", DEFAULT_MOBILE_FG);
-      document.body.style.backgroundColor = "";
+      clearMobileBackgroundStyles();
       setMobileFilterIndex(null);
     };
   }, [activeFilterIndex, isMobileLayout, mounted]);
