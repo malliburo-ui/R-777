@@ -16,7 +16,6 @@ const CV_NOTION_URL =
   "https://malliburo.notion.site/Valeriy-Kolpaschikov-UI-UX-designer-9b361fde1ba749a6b58b65946d9418bf?pvs=4";
 const DEFAULT_MOBILE_BG = "#232003";
 const DEFAULT_MOBILE_FG = "#c7c7c7";
-const MOBILE_FILTER_BG_IMAGE = "/cases/Mobile/mobile-filter-bg.png?v=30";
 const MOBILE_FILTER_D_HEAD_IMAGE = "/cases/Mobile/mobile-filter-d-head.png?v=3";
 const MOBILE_FILTER_D_BG = "#232323";
 const CYCLE_COOLDOWN_MS = 350;
@@ -24,20 +23,13 @@ const CYCLE_COOLDOWN_MS = 350;
 export const MOBILE_FILTERS = [
   { id: "B", name: "Фильтр B", kind: "color" as const, color: "#0000FF", textColor: DEFAULT_MOBILE_FG },
   {
-    id: "C",
-    name: "Фильтр C",
-    kind: "image" as const,
-    color: DEFAULT_MOBILE_BG,
-    image: MOBILE_FILTER_BG_IMAGE,
-    textColor: DEFAULT_MOBILE_FG,
-  },
-  {
     id: "D",
     name: "Фильтр D",
     kind: "image" as const,
     color: MOBILE_FILTER_D_BG,
     image: MOBILE_FILTER_D_HEAD_IMAGE,
     imageSize: "contain",
+    imagePosition: "center calc(50% + 10px)",
     textColor: DEFAULT_MOBILE_FG,
   },
 ] as const;
@@ -91,7 +83,8 @@ function applyMobileBackground(activeFilterIndex: number | null) {
     document.body.style.backgroundImage = `url(${filter.image})`;
     document.body.style.backgroundSize =
       "imageSize" in filter && filter.imageSize ? filter.imageSize : "cover";
-    document.body.style.backgroundPosition = "center";
+    document.body.style.backgroundPosition =
+      "imagePosition" in filter && filter.imagePosition ? filter.imagePosition : "center";
     document.body.style.backgroundRepeat = "no-repeat";
     return;
   }
