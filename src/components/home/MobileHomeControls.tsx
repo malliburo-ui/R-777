@@ -18,8 +18,8 @@ const CV_NOTION_URL =
   "https://malliburo.notion.site/Valeriy-Kolpaschikov-UI-UX-designer-9b361fde1ba749a6b58b65946d9418bf?pvs=4";
 const DEFAULT_MOBILE_BG = "#232003";
 const DEFAULT_MOBILE_FG = "#c7c7c7";
-const MOBILE_FILTER_D_HEAD_IMAGE = "/cases/Mobile/mobile-filter-d-head-v2.gif?v=1";
-const MOBILE_FILTER_D_BG = "#1F1F1F";
+const MOBILE_FILTER_D_HEAD_IMAGE = "/cases/Mobile/mobile-filter-d-head.gif?v=3";
+const MOBILE_FILTER_D_BG = "#232323";
 const MOBILE_FILTER_D_HEAD_OFFSET_Y = 40;
 const CYCLE_COOLDOWN_MS = 350;
 
@@ -94,10 +94,19 @@ function applyMobileBackground(activeFilterIndex: number | null) {
     document.documentElement.style.setProperty("--portfolio-bg", "transparent");
     document.documentElement.style.backgroundColor = filter.color;
     document.body.style.backgroundColor = filter.color;
-    document.body.style.backgroundImage = "";
-    document.body.style.backgroundSize = "";
-    document.body.style.backgroundPosition = "";
-    document.body.style.backgroundRepeat = "";
+
+    if (filter.id === "D") {
+      document.body.style.backgroundImage = "";
+      document.body.style.backgroundSize = "";
+      document.body.style.backgroundPosition = "";
+      document.body.style.backgroundRepeat = "";
+      return;
+    }
+
+    document.body.style.backgroundImage = `url(${filter.image})`;
+    document.body.style.backgroundSize = "cover";
+    document.body.style.backgroundPosition = "center";
+    document.body.style.backgroundRepeat = "no-repeat";
     return;
   }
 
