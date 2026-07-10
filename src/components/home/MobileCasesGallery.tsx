@@ -346,7 +346,7 @@ export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
               ...(fanImage ? { mixBlendMode: "screen" } : {}),
               ...(flowerImage
                 ? {
-                    transform: "scale(1.2) translateY(50px)",
+                    transform: "scale(1.44) translateY(50px)",
                     transformOrigin: "bottom center",
                   }
                 : {}),
