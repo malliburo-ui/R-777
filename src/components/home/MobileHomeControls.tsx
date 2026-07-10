@@ -10,14 +10,17 @@ export const MOBILE_CONTROLS_ROOT_ID = "mobile-home-controls";
 export const MOBILE_CONTROLS_Z = 100_000;
 export const MOBILE_FILTER_CYCLE_EVENT = "portfolio:mobile-filter-cycle";
 export const MOBILE_FILTER_IMAGE_INDEX = 1;
+export const MOBILE_FILTER_D_INDEX = 1;
+export const MOBILE_FILTER_D_LAYER_Z = 1;
 
 const inset = "clamp(10px, 1.5vw, 16px)";
 const CV_NOTION_URL =
   "https://malliburo.notion.site/Valeriy-Kolpaschikov-UI-UX-designer-9b361fde1ba749a6b58b65946d9418bf?pvs=4";
 const DEFAULT_MOBILE_BG = "#232003";
 const DEFAULT_MOBILE_FG = "#c7c7c7";
-const MOBILE_FILTER_D_HEAD_IMAGE = "/cases/Mobile/mobile-filter-d-head.png?v=3";
+const MOBILE_FILTER_D_HEAD_IMAGE = "/cases/Mobile/mobile-filter-d-head.gif?v=1";
 const MOBILE_FILTER_D_BG = "#232323";
+const MOBILE_FILTER_D_HEAD_OFFSET_Y = 40;
 const CYCLE_COOLDOWN_MS = 350;
 
 export const MOBILE_FILTERS = [
@@ -28,8 +31,6 @@ export const MOBILE_FILTERS = [
     kind: "image" as const,
     color: MOBILE_FILTER_D_BG,
     image: MOBILE_FILTER_D_HEAD_IMAGE,
-    imageSize: "contain",
-    imagePosition: "center calc(50% + 40px)",
     textColor: DEFAULT_MOBILE_FG,
   },
 ] as const;
@@ -93,11 +94,18 @@ function applyMobileBackground(activeFilterIndex: number | null) {
     document.documentElement.style.setProperty("--portfolio-bg", "transparent");
     document.documentElement.style.backgroundColor = filter.color;
     document.body.style.backgroundColor = filter.color;
+
+    if (filter.id === "D") {
+      document.body.style.backgroundImage = "";
+      document.body.style.backgroundSize = "";
+      document.body.style.backgroundPosition = "";
+      document.body.style.backgroundRepeat = "";
+      return;
+    }
+
     document.body.style.backgroundImage = `url(${filter.image})`;
-    document.body.style.backgroundSize =
-      "imageSize" in filter && filter.imageSize ? filter.imageSize : "cover";
-    document.body.style.backgroundPosition =
-      "imagePosition" in filter && filter.imagePosition ? filter.imagePosition : "center";
+    document.body.style.backgroundSize = "cover";
+    document.body.style.backgroundPosition = "center";
     document.body.style.backgroundRepeat = "no-repeat";
     return;
   }
@@ -185,15 +193,47 @@ export function MobileHomeControls() {
   }
 
   return createPortal(
-    <div
-      id={MOBILE_CONTROLS_ROOT_ID}
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: MOBILE_CONTROLS_Z,
-        pointerEvents: "none",
-      }}
-    >
+    <>
+      {activeFilterIndex === MOBILE_FILTER_D_INDEX ? (
+        <div
+          aria-hidden
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: MOBILE_FILTER_D_LAYER_Z,
+            backgroundColor: MOBILE_FILTER_D_BG,
+            pointerEvents: "none",
+            overflow: "hidden",
+          }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={MOBILE_FILTER_D_HEAD_IMAGE}
+            alt=""
+            decoding="async"
+            draggable={false}
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: `calc(50% + ${MOBILE_FILTER_D_HEAD_OFFSET_Y}px)`,
+              height: "100dvh",
+              width: "auto",
+              maxWidth: "100vw",
+              transform: "translate(-50%, -50%)",
+              objectFit: "contain",
+            }}
+          />
+        </div>
+      ) : null}
+      <div
+        id={MOBILE_CONTROLS_ROOT_ID}
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: MOBILE_CONTROLS_Z,
+          pointerEvents: "none",
+        }}
+      >
       <a
         href={CV_NOTION_URL}
         target="_blank"
@@ -231,7 +271,8 @@ export function MobileHomeControls() {
       >
         CV!
       </a>
-    </div>,
+      </div>
+    </>,
     document.body,
   );
 }
