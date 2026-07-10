@@ -18,7 +18,7 @@ const CV_NOTION_URL =
   "https://malliburo.notion.site/Valeriy-Kolpaschikov-UI-UX-designer-9b361fde1ba749a6b58b65946d9418bf?pvs=4";
 const DEFAULT_MOBILE_BG = "#232003";
 const DEFAULT_MOBILE_FG = "#c7c7c7";
-const MOBILE_FILTER_D_HEAD_IMAGE = "/cases/Mobile/mobile-filter-d-head.gif?v=11";
+const MOBILE_FILTER_D_HEAD_IMAGE = "/cases/Mobile/mobile-filter-d-head.gif?v=12";
 const MOBILE_FILTER_D_BG = "#1F1F1F";
 const MOBILE_FILTER_D_HEAD_OFFSET_Y = 40;
 const CYCLE_COOLDOWN_MS = 350;
