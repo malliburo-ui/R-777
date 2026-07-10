@@ -4,6 +4,15 @@ const nextConfig: NextConfig = {
   devIndicators: false,
   headers: async () => [
     {
+      source: "/cases/Mobile/:path*",
+      headers: [
+        {
+          key: "Cache-Control",
+          value: "public, max-age=0, must-revalidate",
+        },
+      ],
+    },
+    {
       source: "/cases/web/:path*",
       headers: [
         {
