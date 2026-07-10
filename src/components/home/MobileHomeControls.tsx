@@ -29,7 +29,7 @@ export const MOBILE_FILTERS = [
     color: MOBILE_FILTER_D_BG,
     image: MOBILE_FILTER_D_HEAD_IMAGE,
     imageSize: "contain",
-    imagePosition: "center calc(50% + 100px)",
+    imagePosition: "center calc(50% + 40px)",
     textColor: DEFAULT_MOBILE_FG,
   },
 ] as const;
