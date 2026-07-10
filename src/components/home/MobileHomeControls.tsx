@@ -9,7 +9,6 @@ import { useIsMobileLayout } from "@/hooks/useIsMobileLayout";
 export const MOBILE_CONTROLS_ROOT_ID = "mobile-home-controls";
 export const MOBILE_CONTROLS_Z = 100_000;
 export const MOBILE_FILTER_CYCLE_EVENT = "portfolio:mobile-filter-cycle";
-export const MOBILE_FILTER_HAPTIC_SWITCH_ID = "mobile-filter-haptic-switch";
 export const MOBILE_FILTER_IMAGE_INDEX = 1;
 
 const inset = "clamp(10px, 1.5vw, 16px)";
@@ -20,20 +19,6 @@ const DEFAULT_MOBILE_FG = "#c7c7c7";
 const MOBILE_FILTER_D_HEAD_IMAGE = "/cases/Mobile/mobile-filter-d-head.png?v=3";
 const MOBILE_FILTER_D_BG = "#232323";
 const CYCLE_COOLDOWN_MS = 350;
-const FILTER_HAPTIC_MS = 35;
-
-let lastMobileFilterCycleAt = 0;
-
-function triggerMobileFilterHaptic() {
-  if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
-    navigator.vibrate(FILTER_HAPTIC_MS);
-  }
-
-  const switchEl = document.getElementById(MOBILE_FILTER_HAPTIC_SWITCH_ID);
-  if (switchEl instanceof HTMLInputElement) {
-    switchEl.click();
-  }
-}
 
 export const MOBILE_FILTERS = [
   { id: "B", name: "Фильтр B", kind: "color" as const, color: "#0000FF", textColor: DEFAULT_MOBILE_FG },
@@ -44,7 +29,7 @@ export const MOBILE_FILTERS = [
     color: MOBILE_FILTER_D_BG,
     image: MOBILE_FILTER_D_HEAD_IMAGE,
     imageSize: "contain",
-    imagePosition: "center calc(50% + 10px)",
+    imagePosition: "center calc(50% + 100px)",
     textColor: DEFAULT_MOBILE_FG,
   },
 ] as const;
@@ -67,13 +52,6 @@ export function dispatchMobileFilterCycle() {
     return;
   }
 
-  const now = Date.now();
-  if (now - lastMobileFilterCycleAt < CYCLE_COOLDOWN_MS) {
-    return;
-  }
-
-  lastMobileFilterCycleAt = now;
-  triggerMobileFilterHaptic();
   document.dispatchEvent(new Event(MOBILE_FILTER_CYCLE_EVENT));
 }
 
@@ -138,20 +116,11 @@ export function MobileHomeControls() {
   const [mounted, setMounted] = useState(false);
   const [activeFilterIndex, setActiveFilterIndex] = useState<number | null>(null);
   const [cvPressed, setCvPressed] = useState(false);
-  const hapticSwitchRef = useRef<HTMLInputElement>(null);
+  const lastCycleAtRef = useRef(0);
 
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  useEffect(() => {
-    const switchEl = hapticSwitchRef.current;
-    if (!switchEl || switchEl.hasAttribute("switch")) {
-      return;
-    }
-
-    switchEl.setAttribute("switch", "");
-  }, [mounted, isMobileLayout]);
 
   useEffect(() => {
     if (!mounted || !isMobileLayout) {
@@ -162,6 +131,12 @@ export function MobileHomeControls() {
   }, [isMobileLayout, mounted]);
 
   const cycleFilter = useCallback(() => {
+    const now = Date.now();
+    if (now - lastCycleAtRef.current < CYCLE_COOLDOWN_MS) {
+      return;
+    }
+
+    lastCycleAtRef.current = now;
     setActiveFilterIndex((current) => {
       if (current === null) {
         return 0;
@@ -219,26 +194,6 @@ export function MobileHomeControls() {
         pointerEvents: "none",
       }}
     >
-      <input
-        ref={hapticSwitchRef}
-        id={MOBILE_FILTER_HAPTIC_SWITCH_ID}
-        type="checkbox"
-        defaultChecked={false}
-        aria-hidden
-        tabIndex={-1}
-        style={{
-          position: "fixed",
-          left: 0,
-          top: 0,
-          width: 1,
-          height: 1,
-          opacity: 0.01,
-          pointerEvents: "none",
-          margin: 0,
-          appearance: "auto",
-          WebkitAppearance: "switch",
-        }}
-      />
       <a
         href={CV_NOTION_URL}
         target="_blank"
