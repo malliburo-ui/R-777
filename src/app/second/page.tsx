@@ -19,6 +19,7 @@ export default function SecondPage() {
       mobileCases={mobileCases}
       sideNavHref="/"
       heroTextClassName={carvingFont.className}
+      heroTextLayout="spread"
     />
   );
 }

@@ -8,6 +8,7 @@ type HomePageViewProps = {
   mobileCases: GalleryEntry[];
   sideNavHref: string;
   heroTextClassName?: string;
+  heroTextLayout?: "default" | "spread";
 };
 
 export function HomePageView({
@@ -16,6 +17,7 @@ export function HomePageView({
   mobileCases,
   sideNavHref,
   heroTextClassName,
+  heroTextLayout = "default",
 }: HomePageViewProps) {
   return (
     <>
@@ -27,6 +29,7 @@ export function HomePageView({
           mobileCases={mobileCases}
           sideNavHref={sideNavHref}
           heroTextClassName={heroTextClassName}
+          heroTextLayout={heroTextLayout}
         />
       </main>
     </>
