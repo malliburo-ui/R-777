@@ -19,7 +19,7 @@ const CV_NOTION_URL =
 const DEFAULT_MOBILE_BG = "#232003";
 const DEFAULT_MOBILE_FG = "#c7c7c7";
 const MOBILE_FILTER_D_HEAD_IMAGE = "/cases/Mobile/mobile-filter-d-head.gif?v=2";
-const MOBILE_FILTER_D_HEAD_OFFSET_Y = 40;
+const MOBILE_FILTER_D_HEAD_OFFSET_Y = 20;
 const CYCLE_COOLDOWN_MS = 350;
 
 export const MOBILE_FILTERS = [
