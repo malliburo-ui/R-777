@@ -18,8 +18,7 @@ const CV_NOTION_URL =
   "https://malliburo.notion.site/Valeriy-Kolpaschikov-UI-UX-designer-9b361fde1ba749a6b58b65946d9418bf?pvs=4";
 const DEFAULT_MOBILE_BG = "#232003";
 const DEFAULT_MOBILE_FG = "#c7c7c7";
-const MOBILE_FILTER_D_HEAD_IMAGE = "/cases/Mobile/mobile-filter-d-head.gif?v=1";
-const MOBILE_FILTER_D_BG = "#232323";
+const MOBILE_FILTER_D_HEAD_IMAGE = "/cases/Mobile/mobile-filter-d-head.gif?v=2";
 const MOBILE_FILTER_D_HEAD_OFFSET_Y = 40;
 const CYCLE_COOLDOWN_MS = 350;
 
@@ -28,8 +27,7 @@ export const MOBILE_FILTERS = [
   {
     id: "D",
     name: "Фильтр D",
-    kind: "image" as const,
-    color: MOBILE_FILTER_D_BG,
+    kind: "overlay" as const,
     image: MOBILE_FILTER_D_HEAD_IMAGE,
     textColor: DEFAULT_MOBILE_FG,
   },
@@ -90,23 +88,8 @@ function applyMobileBackground(activeFilterIndex: number | null) {
     return;
   }
 
-  if (filter.kind === "image") {
-    document.documentElement.style.setProperty("--portfolio-bg", "transparent");
-    document.documentElement.style.backgroundColor = filter.color;
-    document.body.style.backgroundColor = filter.color;
-
-    if (filter.id === "D") {
-      document.body.style.backgroundImage = "";
-      document.body.style.backgroundSize = "";
-      document.body.style.backgroundPosition = "";
-      document.body.style.backgroundRepeat = "";
-      return;
-    }
-
-    document.body.style.backgroundImage = `url(${filter.image})`;
-    document.body.style.backgroundSize = "cover";
-    document.body.style.backgroundPosition = "center";
-    document.body.style.backgroundRepeat = "no-repeat";
+  if (filter.kind === "overlay") {
+    clearMobileBackgroundStyles();
     return;
   }
 
@@ -201,7 +184,6 @@ export function MobileHomeControls() {
             position: "fixed",
             inset: 0,
             zIndex: MOBILE_FILTER_D_LAYER_Z,
-            backgroundColor: MOBILE_FILTER_D_BG,
             pointerEvents: "none",
             overflow: "hidden",
           }}
