@@ -94,19 +94,10 @@ function applyMobileBackground(activeFilterIndex: number | null) {
     document.documentElement.style.setProperty("--portfolio-bg", "transparent");
     document.documentElement.style.backgroundColor = filter.color;
     document.body.style.backgroundColor = filter.color;
-
-    if (filter.id === "D") {
-      document.body.style.backgroundImage = "";
-      document.body.style.backgroundSize = "";
-      document.body.style.backgroundPosition = "";
-      document.body.style.backgroundRepeat = "";
-      return;
-    }
-
-    document.body.style.backgroundImage = `url(${filter.image})`;
-    document.body.style.backgroundSize = "cover";
-    document.body.style.backgroundPosition = "center";
-    document.body.style.backgroundRepeat = "no-repeat";
+    document.body.style.backgroundImage = "";
+    document.body.style.backgroundSize = "";
+    document.body.style.backgroundPosition = "";
+    document.body.style.backgroundRepeat = "";
     return;
   }
 
