@@ -2,6 +2,7 @@ import { HeroGif } from "@/components/home/HeroGif";
 import { HomeGalleries } from "@/components/home/HomeGalleries";
 import { MobileCasesGalleryClient } from "@/components/home/MobileCasesGalleryClient";
 import { MobileHomeControls } from "@/components/home/MobileHomeControls";
+import { PageSideNavHotspot } from "@/components/home/PageSideNavHotspot";
 import type { GalleryEntry } from "@/lib/gallery";
 
 const inset = "clamp(10px, 1.5vw, 16px)";
@@ -12,9 +13,17 @@ type Zine218HeroProps = {
   cases: GalleryEntry[];
   drawings: GalleryEntry[];
   mobileCases: GalleryEntry[];
+  sideNavHref: string;
+  heroTextClassName?: string;
 };
 
-export function Zine218Hero({ cases, drawings, mobileCases }: Zine218HeroProps) {
+export function Zine218Hero({
+  cases,
+  drawings,
+  mobileCases,
+  sideNavHref,
+  heroTextClassName,
+}: Zine218HeroProps) {
   return (
     <section
       className="relative h-dvh w-full bg-portfolio-bg text-portfolio-fg lg:fixed lg:inset-0 lg:overflow-hidden"
@@ -30,7 +39,7 @@ export function Zine218Hero({ cases, drawings, mobileCases }: Zine218HeroProps) 
 
       <div className="pointer-events-none absolute inset-0 z-[70] max-lg:z-[20]">
         <p
-          className="pointer-events-none absolute left-0 top-0 max-w-[min(768px,calc(100vw-3rem))] font-medium leading-[0.96] tracking-[-0.03em] max-md:max-w-[calc(100vw-2*clamp(10px,1.5vw,16px))] max-lg:text-[clamp(28px,8vw,96px)] lg:text-[clamp(24px,5.2vw,52px)]"
+          className={`pointer-events-none absolute left-0 top-0 max-w-[min(768px,calc(100vw-3rem))] font-medium leading-[0.96] tracking-[-0.03em] max-md:max-w-[calc(100vw-2*clamp(10px,1.5vw,16px))] max-lg:text-[clamp(28px,8vw,96px)] lg:text-[clamp(24px,5.2vw,52px)] ${heroTextClassName ?? ""}`}
           style={{
             padding: inset,
           }}
@@ -62,6 +71,7 @@ export function Zine218Hero({ cases, drawings, mobileCases }: Zine218HeroProps) 
       </div>
 
       <MobileHomeControls />
+      <PageSideNavHotspot href={sideNavHref} />
     </section>
   );
 }

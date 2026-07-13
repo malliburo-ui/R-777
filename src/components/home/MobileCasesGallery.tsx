@@ -8,6 +8,7 @@ import {
   MOBILE_CONTROLS_ROOT_ID,
   MOBILE_CONTROLS_Z,
 } from "@/components/home/MobileHomeControls";
+import { PAGE_SIDE_NAV_HOTSPOT_ID } from "@/components/home/PageSideNavHotspot";
 import { galleryImagePath, type GalleryEntry } from "@/lib/gallery";
 
 const GALLERY_ASSET_VERSION = "29";
@@ -48,7 +49,9 @@ function isControlsHit(target: EventTarget | null) {
     return false;
   }
 
-  return Boolean(target.closest(`#${MOBILE_CONTROLS_ROOT_ID}`));
+  return Boolean(
+    target.closest(`#${MOBILE_CONTROLS_ROOT_ID}, #${PAGE_SIDE_NAV_HOTSPOT_ID}`),
+  );
 }
 
 function readMaxScroll(scrollEl: HTMLDivElement) {

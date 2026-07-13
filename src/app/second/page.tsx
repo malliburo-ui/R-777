@@ -1,7 +1,13 @@
 import { HomePageView } from "@/components/home/HomePageView";
+import { carvingFont } from "@/lib/carvingFont";
 import { loadGalleryManifest, loadMobileCasesManifest } from "@/lib/loadGalleryManifest";
+import type { Metadata } from "next";
 
-export default function Home() {
+export const metadata: Metadata = {
+  title: "Second — Visual researcher",
+};
+
+export default function SecondPage() {
   const { items: cases } = loadGalleryManifest("cases");
   const { items: drawings } = loadGalleryManifest("drawings");
   const { items: mobileCases } = loadMobileCasesManifest();
@@ -11,7 +17,8 @@ export default function Home() {
       cases={cases}
       drawings={drawings}
       mobileCases={mobileCases}
-      sideNavHref="/second"
+      sideNavHref="/"
+      heroTextClassName={carvingFont.className}
     />
   );
 }
