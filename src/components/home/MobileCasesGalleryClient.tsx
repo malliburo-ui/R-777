@@ -14,8 +14,12 @@ const MobileCasesGallery = dynamic(
 
 type MobileCasesGalleryClientProps = {
   items: GalleryEntry[];
+  imageAnchor?: "bottom" | "center";
 };
 
-export function MobileCasesGalleryClient({ items }: MobileCasesGalleryClientProps) {
-  return <MobileCasesGallery items={items} />;
+export function MobileCasesGalleryClient({
+  items,
+  imageAnchor = "bottom",
+}: MobileCasesGalleryClientProps) {
+  return <MobileCasesGallery items={items} imageAnchor={imageAnchor} />;
 }

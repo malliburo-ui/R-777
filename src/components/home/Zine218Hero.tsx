@@ -17,6 +17,7 @@ type Zine218HeroProps = {
   sideNavHref: string;
   heroTextClassName?: string;
   heroTextLayout?: "default" | "spread";
+  mobileGalleryAnchor?: "bottom" | "center";
 };
 
 export function Zine218Hero({
@@ -26,6 +27,7 @@ export function Zine218Hero({
   sideNavHref,
   heroTextClassName,
   heroTextLayout = "default",
+  mobileGalleryAnchor = "bottom",
 }: Zine218HeroProps) {
   const spreadHeroText = heroTextLayout === "spread" && heroTextClassName;
   return (
@@ -38,10 +40,12 @@ export function Zine218Hero({
       </div>
 
       <div className="hidden max-lg:contents">
-        <MobileCasesGalleryClient items={mobileCases} />
+        <MobileCasesGalleryClient items={mobileCases} imageAnchor={mobileGalleryAnchor} />
       </div>
 
-      <div className="pointer-events-none absolute inset-0 z-[70] max-lg:z-[20]">
+      <div
+        className={`pointer-events-none absolute inset-0 ${spreadHeroText ? "z-[5] max-lg:z-[5]" : "z-[70] max-lg:z-[20]"}`}
+      >
         {spreadHeroText ? (
           <SecondHeroText fontClassName={heroTextClassName} padding={inset} />
         ) : (

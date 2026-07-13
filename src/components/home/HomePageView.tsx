@@ -9,6 +9,7 @@ type HomePageViewProps = {
   sideNavHref: string;
   heroTextClassName?: string;
   heroTextLayout?: "default" | "spread";
+  mobileGalleryAnchor?: "bottom" | "center";
 };
 
 export function HomePageView({
@@ -18,6 +19,7 @@ export function HomePageView({
   sideNavHref,
   heroTextClassName,
   heroTextLayout = "default",
+  mobileGalleryAnchor = "bottom",
 }: HomePageViewProps) {
   return (
     <>
@@ -30,6 +32,7 @@ export function HomePageView({
           sideNavHref={sideNavHref}
           heroTextClassName={heroTextClassName}
           heroTextLayout={heroTextLayout}
+          mobileGalleryAnchor={mobileGalleryAnchor}
         />
       </main>
     </>

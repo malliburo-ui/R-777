@@ -20,6 +20,7 @@ export default function SecondPage() {
       sideNavHref="/"
       heroTextClassName={carvingFont.className}
       heroTextLayout="spread"
+      mobileGalleryAnchor="center"
     />
   );
 }

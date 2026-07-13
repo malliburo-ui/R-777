@@ -94,9 +94,10 @@ function preloadGalleryImage(filename: string, priority: "high" | "low" = "low")
 
 type MobileCasesGalleryProps = {
   items: GalleryEntry[];
+  imageAnchor?: "bottom" | "center";
 };
 
-export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
+export function MobileCasesGallery({ items, imageAnchor = "bottom" }: MobileCasesGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [scrollStep, setScrollStep] = useState(DEFAULT_SCROLL_STEP);
   const [yellowOverlayActive, setYellowOverlayActive] = useState(false);
@@ -307,6 +308,7 @@ export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
   const fanImage = isFanImage(active.image);
   const flowerImage = isFlowerImage(active.image);
   const imageSrc = fanImage ? mobileImageSrc(MOBILE_FAN_SOURCE) : mobileImageSrc(active.image);
+  const centeredGallery = imageAnchor === "center";
 
   return (
     <>
@@ -334,23 +336,28 @@ export function MobileCasesGallery({ items }: MobileCasesGalleryProps) {
         : null}
 
       <div
-        className="pointer-events-none fixed inset-x-0 bottom-0 w-screen max-lg:block lg:hidden"
-        style={{ height: "calc(100dvh - 220px)", zIndex: 10 }}
+        className={`pointer-events-none fixed inset-x-0 w-screen max-lg:block lg:hidden ${centeredGallery ? "inset-y-0" : "bottom-0"}`}
+        style={{
+          height: centeredGallery ? "100dvh" : "calc(100dvh - 220px)",
+          zIndex: centeredGallery ? 25 : 10,
+        }}
       >
-        <div className="pointer-events-none flex h-full w-full items-end justify-center leading-[0]">
+        <div
+          className={`pointer-events-none flex h-full w-full justify-center leading-[0] ${centeredGallery ? "items-center" : "items-end"}`}
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             key={fanImage ? "fan" : active.image}
             src={imageSrc}
             alt={active.title}
-            className="pointer-events-none block h-auto max-h-full w-full object-contain object-bottom"
+            className={`pointer-events-none block h-auto max-h-full w-full object-contain ${centeredGallery ? "object-center" : "object-bottom"}`}
             style={{
               width: "100vw",
               ...(fanImage ? { mixBlendMode: "screen" } : {}),
               ...(flowerImage
                 ? {
                     transform: "scale(1.44) translateY(50px)",
-                    transformOrigin: "bottom center",
+                    transformOrigin: centeredGallery ? "center center" : "bottom center",
                   }
                 : {}),
             }}
