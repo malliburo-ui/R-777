@@ -128,20 +128,16 @@ export function SecondHeroText({ fontClassName, padding }: SecondHeroTextProps) 
         style={{ padding }}
       >
         {layout?.lines.map((line, lineIndex) => (
-          <div
+          <p
             key={`${line}-${lineIndex}`}
-            className="flex w-full justify-between"
+            className={`${fontClassName} m-0 w-full text-left`}
             style={{
               fontSize: layout.fontSize,
               lineHeight: LINE_HEIGHT_RATIO,
             }}
           >
-            {Array.from(line).map((character, characterIndex) => (
-              <span key={`${lineIndex}-${characterIndex}`} className={fontClassName}>
-                {character}
-              </span>
-            ))}
-          </div>
+            {line}
+          </p>
         ))}
       </div>
     </>
