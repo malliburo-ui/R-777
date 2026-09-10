@@ -13,9 +13,6 @@ export const MOBILE_FILTER_IMAGE_INDEX = 1;
 export const MOBILE_FILTER_D_INDEX = 1;
 export const MOBILE_FILTER_D_LAYER_Z = 1;
 
-const inset = "clamp(10px, 1.5vw, 16px)";
-const CV_NOTION_URL =
-  "https://malliburo.notion.site/Valeriy-Kolpaschikov-UI-UX-designer-9b361fde1ba749a6b58b65946d9418bf?pvs=4";
 const DEFAULT_MOBILE_BG = "#232003";
 const DEFAULT_MOBILE_FG = "#c7c7c7";
 const MOBILE_FILTER_D_HEAD_IMAGE = "/cases/Mobile/mobile-filter-d-head.gif?v=2";
@@ -106,7 +103,6 @@ export function MobileHomeControls() {
   const isMobileLayout = useIsMobileLayout();
   const [mounted, setMounted] = useState(false);
   const [activeFilterIndex, setActiveFilterIndex] = useState<number | null>(null);
-  const [cvPressed, setCvPressed] = useState(false);
   const lastCycleAtRef = useRef(0);
 
   useEffect(() => {
@@ -171,90 +167,39 @@ export function MobileHomeControls() {
     };
   }, [activeFilterIndex, isMobileLayout, mounted]);
 
-  if (!mounted || !isMobileLayout) {
+  if (!mounted || !isMobileLayout || activeFilterIndex !== MOBILE_FILTER_D_INDEX) {
     return null;
   }
 
   return createPortal(
-    <>
-      {activeFilterIndex === MOBILE_FILTER_D_INDEX ? (
-        <div
-          aria-hidden
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: MOBILE_FILTER_D_LAYER_Z,
-            pointerEvents: "none",
-            overflow: "hidden",
-          }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={MOBILE_FILTER_D_HEAD_IMAGE}
-            alt=""
-            decoding="async"
-            draggable={false}
-            style={{
-              position: "absolute",
-              left: "50%",
-              top: `calc(50% + ${MOBILE_FILTER_D_HEAD_OFFSET_Y}px)`,
-              height: "100dvh",
-              width: "auto",
-              maxWidth: "100vw",
-              transform: "translate(-50%, -50%)",
-              objectFit: "contain",
-            }}
-          />
-        </div>
-      ) : null}
-      <div
-        id={MOBILE_CONTROLS_ROOT_ID}
-        style={{
-          position: "fixed",
-          inset: 0,
-          zIndex: MOBILE_CONTROLS_Z,
-          pointerEvents: "none",
-        }}
-      >
-      <a
-        href={CV_NOTION_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="CV"
-        onPointerDown={() => setCvPressed(true)}
-        onPointerUp={() => setCvPressed(false)}
-        onPointerLeave={() => setCvPressed(false)}
-        onPointerCancel={() => setCvPressed(false)}
+    <div
+      aria-hidden
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: MOBILE_FILTER_D_LAYER_Z,
+        pointerEvents: "none",
+        overflow: "hidden",
+      }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={MOBILE_FILTER_D_HEAD_IMAGE}
+        alt=""
+        decoding="async"
+        draggable={false}
         style={{
           position: "absolute",
-          top: 0,
-          right: 0,
-          zIndex: 2,
-          margin: 0,
-          padding: inset,
-          border: "none",
-          background: "transparent",
-          color: "var(--portfolio-fg)",
-          fontFamily: "inherit",
-          fontWeight: 700,
-          fontSize: "clamp(18px, 2.79vw, 28.481px)",
-          lineHeight: 1,
-          letterSpacing: "-0.03em",
-          minWidth: 56,
-          minHeight: 56,
-          pointerEvents: "auto",
-          touchAction: "manipulation",
-          WebkitTapHighlightColor: "transparent",
-          transform: `scale(${cvPressed ? 2 : 1})`,
-          transformOrigin: "top right",
-          transition: "transform 200ms ease-out",
-          textDecoration: "none",
+          left: "50%",
+          top: `calc(50% + ${MOBILE_FILTER_D_HEAD_OFFSET_Y}px)`,
+          height: "100dvh",
+          width: "auto",
+          maxWidth: "100vw",
+          transform: "translate(-50%, -50%)",
+          objectFit: "contain",
         }}
-      >
-        CV!
-      </a>
-      </div>
-    </>,
+      />
+    </div>,
     document.body,
   );
 }

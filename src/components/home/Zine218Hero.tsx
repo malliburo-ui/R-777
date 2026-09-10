@@ -7,8 +7,6 @@ import { SecondHeroText } from "@/components/home/SecondHeroText";
 import type { GalleryEntry } from "@/lib/gallery";
 
 const inset = "clamp(10px, 1.5vw, 16px)";
-const CV_NOTION_URL =
-  "https://malliburo.notion.site/Valeriy-Kolpaschikov-UI-UX-designer-9b361fde1ba749a6b58b65946d9418bf?pvs=4";
 
 type Zine218HeroProps = {
   cases: GalleryEntry[];
@@ -61,19 +59,6 @@ export function Zine218Hero({
             perceive.
           </p>
         )}
-
-        <a
-          href={CV_NOTION_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="pointer-events-auto absolute right-0 top-0 z-[80] font-bold leading-none tracking-[-0.03em] transition-opacity hover:opacity-70 max-lg:hidden"
-          style={{
-            padding: inset,
-            fontSize: "clamp(18px, 2.79vw, 28.481px)",
-          }}
-        >
-          CV!
-        </a>
 
         <div className="pointer-events-auto max-lg:hidden">
           <HomeGalleries cases={cases} drawings={drawings} />
