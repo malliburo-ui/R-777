@@ -8,14 +8,16 @@ export const metadata: Metadata = {
 };
 
 export default function SecondPage() {
-  const { items: cases } = loadGalleryManifest("cases");
-  const { items: drawings } = loadGalleryManifest("drawings");
+  const { items: cases, altImages: casesAltImages } = loadGalleryManifest("cases");
+  const { items: drawings, altImages: drawingsAltImages } = loadGalleryManifest("drawings");
   const { items: mobileCases } = loadMobileCasesManifest();
 
   return (
     <HomePageView
       cases={cases}
+      casesAltImages={casesAltImages}
       drawings={drawings}
+      drawingsAltImages={drawingsAltImages}
       mobileCases={mobileCases}
       sideNavHref="/"
       heroTextClassName={carvingFont.className}

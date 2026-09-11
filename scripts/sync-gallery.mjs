@@ -31,6 +31,33 @@ function idFromFilename(filename) {
   return slug || withoutExt.toLowerCase();
 }
 
+function servedWebName(sourceName) {
+  if (SOURCE_GIF.test(sourceName)) {
+    return sourceName;
+  }
+
+  return sourceName.replace(/\.(png|jpe?g|gif)$/i, ".webp");
+}
+
+function buildAltImageMap(allSourceFiles) {
+  const altImages = {};
+
+  for (const altSource of allSourceFiles) {
+    if (!/^\d+B\.(png|jpe?g|gif)$/i.test(altSource)) {
+      continue;
+    }
+
+    const baseSource = altSource.replace(/B(\.(png|jpe?g|gif))$/i, "$1");
+    if (!allSourceFiles.includes(baseSource)) {
+      continue;
+    }
+
+    altImages[servedWebName(baseSource)] = servedWebName(altSource);
+  }
+
+  return altImages;
+}
+
 function main() {
   const folder = process.argv[2];
   if (!GALLERY_FOLDERS.includes(folder)) {
@@ -56,9 +83,12 @@ function main() {
     }
   }
 
-  const sourceFiles = fs
+  const allSourceFiles = fs
     .readdirSync(imagesDir)
-    .filter((name) => /^\d+\.(png|jpe?g|gif)$/i.test(name) && !name.startsWith("."))
+    .filter((name) => !name.startsWith("."));
+
+  const sourceFiles = allSourceFiles
+    .filter((name) => /^\d+\.(png|jpe?g|gif)$/i.test(name))
     .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 
   if (sourceFiles.length === 0) {
@@ -68,10 +98,8 @@ function main() {
   }
 
   const items = sourceFiles.map((sourceName) => {
-    const isGif = SOURCE_GIF.test(sourceName);
-    const webName = sourceName.replace(/\.(png|jpe?g|gif)$/i, ".webp");
-    const servedName = isGif ? sourceName : webName;
-    const override = meta[sourceName] ?? meta[webName] ?? {};
+    const servedName = servedWebName(sourceName);
+    const override = meta[sourceName] ?? meta[servedName] ?? {};
     return {
       id: override.id ?? idFromFilename(sourceName),
       title: override.title ?? titleFromFilename(sourceName),
@@ -79,7 +107,10 @@ function main() {
     };
   });
 
-  fs.writeFileSync(manifestPath, `${JSON.stringify({ items }, null, 2)}\n`, "utf8");
+  const altImages = buildAltImageMap(allSourceFiles);
+  const manifest = { items, ...(Object.keys(altImages).length > 0 ? { altImages } : {}) };
+
+  fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
 
   if (!fs.existsSync(webDir)) {
     console.warn(`⚠ public/${folder}/web/ not found — run: npm run gallery:optimize`);
@@ -89,6 +120,13 @@ function main() {
   items.forEach((item, index) => {
     console.log(`  ${index + 1}. ${item.title} (${item.image})`);
   });
+
+  if (Object.keys(altImages).length > 0) {
+    console.log(`✓ ${Object.keys(altImages).length} blue-background variant(s)`);
+    Object.entries(altImages).forEach(([base, alt]) => {
+      console.log(`  ${base} → ${alt}`);
+    });
+  }
 }
 
 main();

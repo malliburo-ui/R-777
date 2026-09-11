@@ -11,12 +11,15 @@ export function loadGalleryManifest(folder: "cases" | "drawings" | "mind" | "cv-
     const data = JSON.parse(raw) as GalleryManifest;
 
     if (!Array.isArray(data.items)) {
-      return { items: [] };
+      return { items: [], altImages: {} };
     }
 
-    return data;
+    return {
+      items: data.items,
+      altImages: data.altImages ?? {},
+    };
   } catch {
-    return { items: [] };
+    return { items: [], altImages: {} };
   }
 }
 

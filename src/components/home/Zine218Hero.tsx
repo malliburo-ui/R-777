@@ -4,13 +4,15 @@ import { MobileCasesGalleryClient } from "@/components/home/MobileCasesGalleryCl
 import { MobileHomeControls } from "@/components/home/MobileHomeControls";
 import { PageSideNavHotspot } from "@/components/home/PageSideNavHotspot";
 import { SecondHeroText } from "@/components/home/SecondHeroText";
-import type { GalleryEntry } from "@/lib/gallery";
+import type { GalleryAltImageMap, GalleryEntry } from "@/lib/gallery";
 
 const inset = "clamp(10px, 1.5vw, 16px)";
 
 type Zine218HeroProps = {
   cases: GalleryEntry[];
+  casesAltImages?: GalleryAltImageMap;
   drawings: GalleryEntry[];
+  drawingsAltImages?: GalleryAltImageMap;
   mobileCases: GalleryEntry[];
   sideNavHref: string;
   heroTextClassName?: string;
@@ -20,7 +22,9 @@ type Zine218HeroProps = {
 
 export function Zine218Hero({
   cases,
+  casesAltImages,
   drawings,
+  drawingsAltImages,
   mobileCases,
   sideNavHref,
   heroTextClassName,
@@ -61,7 +65,12 @@ export function Zine218Hero({
         )}
 
         <div className="pointer-events-auto max-lg:hidden">
-          <HomeGalleries cases={cases} drawings={drawings} />
+          <HomeGalleries
+            cases={cases}
+            casesAltImages={casesAltImages}
+            drawings={drawings}
+            drawingsAltImages={drawingsAltImages}
+          />
         </div>
       </div>
 

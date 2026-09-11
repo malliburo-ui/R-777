@@ -3,7 +3,13 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
+import { useAltBackgroundActive } from "@/hooks/useAltBackgroundActive";
+
+const FLOWER_GIF = "/figma/zine-225-hero.gif?v=3";
+const FAN_GIF = "/cases/Mobile/21.gif?v=1";
+
 export function HeroGif() {
+  const altBackgroundActive = useAltBackgroundActive();
   const [mirrored, setMirrored] = useState(false);
 
   useEffect(() => {
@@ -25,11 +31,12 @@ export function HeroGif() {
     >
       <div className="relative aspect-square w-[clamp(320px,63vw,1600px)] translate-y-[clamp(36px,10vh,115px)] rotate-[17deg] max-md:w-[min(88vw,360px)] max-md:translate-y-[clamp(48px,12vh,96px)] max-md:rotate-[16deg]">
         <Image
-          src="/figma/zine-225-hero.gif"
+          key={altBackgroundActive ? "fan" : "flower"}
+          src={altBackgroundActive ? FAN_GIF : FLOWER_GIF}
           alt=""
           fill
           unoptimized
-          className={`object-contain ${mirrored ? "-scale-x-100" : ""}`}
+          className={`object-contain ${altBackgroundActive ? "mix-blend-screen" : ""} ${mirrored ? "-scale-x-100" : ""}`}
           priority
           sizes="(max-width: 768px) 88vw, 63vw"
         />

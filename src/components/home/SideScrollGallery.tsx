@@ -2,13 +2,14 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { resolveGalleryAssetPath, type GalleryEntry } from "@/lib/gallery";
+import { useAltBackgroundActive } from "@/hooks/useAltBackgroundActive";
+import { resolveAltGalleryImage, resolveGalleryAssetPath, type GalleryEntry } from "@/lib/gallery";
 
 const inset = "clamp(10px, 1.5vw, 16px)";
 const WHEEL_THRESHOLD = 36;
 const STEP_COOLDOWN_MS = 90;
 const PRELOAD_RADIUS = 2;
-const GALLERY_ASSET_VERSION = "31";
+const GALLERY_ASSET_VERSION = "35";
 
 type SideScrollGalleryProps = {
   side: "left" | "right";
@@ -19,6 +20,7 @@ type SideScrollGalleryProps = {
   previewTop?: string;
   previewFit?: "square" | "natural";
   previewScale?: number;
+  altImageMap?: Record<string, string>;
 };
 
 const preloaded = new Set<string>();
@@ -38,6 +40,20 @@ function preloadGalleryImage(basePath: string, filename: string, priority: "high
   img.src = url;
 }
 
+function preloadGalleryItemImages(
+  basePath: string,
+  filename: string,
+  altImageMap: Record<string, string> | undefined,
+  priority: "high" | "low" = "low",
+) {
+  preloadGalleryImage(basePath, filename, priority);
+
+  const altFilename = altImageMap?.[filename];
+  if (altFilename) {
+    preloadGalleryImage(basePath, altFilename, "low");
+  }
+}
+
 export function SideScrollGallery({
   side,
   sectionLabel,
@@ -47,7 +63,9 @@ export function SideScrollGallery({
   previewTop = "clamp(140px, 28vh, 220px)",
   previewFit = "square",
   previewScale = 1,
+  altImageMap,
 }: SideScrollGalleryProps) {
+  const altBackgroundActive = useAltBackgroundActive();
   const [activeIndex, setActiveIndex] = useState(0);
   const zoneRef = useRef<HTMLDivElement>(null);
   const wheelDelta = useRef(0);
@@ -90,14 +108,15 @@ export function SideScrollGallery({
           continue;
         }
 
-        preloadGalleryImage(
+        preloadGalleryItemImages(
           imageBasePath,
           items[index].image,
+          altImageMap,
           index === activeIndex ? "high" : "low",
         );
       }
     }
-  }, [activeIndex, items, imageBasePath]);
+  }, [activeIndex, altImageMap, items, imageBasePath]);
 
   useEffect(() => {
     if (items.length === 0) {
@@ -107,7 +126,7 @@ export function SideScrollGallery({
     const preloadRest = () => {
       items.forEach((item, index) => {
         if (Math.abs(index - activeIndex) > PRELOAD_RADIUS) {
-          preloadGalleryImage(imageBasePath, item.image, "low");
+          preloadGalleryItemImages(imageBasePath, item.image, altImageMap, "low");
         }
       });
     };
@@ -119,7 +138,7 @@ export function SideScrollGallery({
 
     const timeoutId = setTimeout(preloadRest, 1500);
     return () => clearTimeout(timeoutId);
-  }, [activeIndex, items, imageBasePath]);
+  }, [activeIndex, altImageMap, items, imageBasePath]);
 
   useEffect(() => {
     const zone = zoneRef.current;
@@ -202,8 +221,9 @@ export function SideScrollGallery({
           ? "justify-end items-start"
           : "justify-start items-start";
 
-  const imageSrc = `${resolveGalleryAssetPath(imageBasePath, active.image)}?v=${GALLERY_ASSET_VERSION}`;
-  const isAnimatedGif = /\.gif$/i.test(active.image);
+  const displayImage = resolveAltGalleryImage(active.image, altBackgroundActive, altImageMap);
+  const imageSrc = `${resolveGalleryAssetPath(imageBasePath, displayImage)}?v=${GALLERY_ASSET_VERSION}`;
+  const isAnimatedGif = /\.gif$/i.test(displayImage);
 
   const onTouchStart = (event: React.TouchEvent) => {
     touchStartY.current = event.touches[0]?.clientY ?? null;
@@ -250,7 +270,7 @@ export function SideScrollGallery({
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            key={active.image}
+            key={displayImage}
             src={imageSrc}
             alt={active.title}
             className="block h-auto w-auto max-w-full"
@@ -275,7 +295,7 @@ export function SideScrollGallery({
           <div className="relative size-full">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              key={active.image}
+              key={displayImage}
               src={imageSrc}
               alt={active.title}
               className={`absolute inset-0 size-full ${imageObjectClass}`}

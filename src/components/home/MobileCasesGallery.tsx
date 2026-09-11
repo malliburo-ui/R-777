@@ -3,11 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-import {
-  dispatchMobileFilterCycle,
-  MOBILE_CONTROLS_ROOT_ID,
-  MOBILE_CONTROLS_Z,
-} from "@/components/home/MobileHomeControls";
+import { MOBILE_CONTROLS_ROOT_ID, MOBILE_CONTROLS_Z } from "@/components/home/MobileHomeControls";
 import { PAGE_SIDE_NAV_HOTSPOT_ID } from "@/components/home/PageSideNavHotspot";
 import { galleryImagePath, type GalleryEntry } from "@/lib/gallery";
 
@@ -17,7 +13,6 @@ const MOBILE_IMAGE_BASE = "/cases/Mobile";
 const MOBILE_FAN_SOURCE = "21.gif";
 const MOBILE_FLOWER_IMAGE = "zine-225-hero-transparent.gif";
 const SWIPE_THRESHOLD = 48;
-const TAP_THRESHOLD = 16;
 const YELLOW_OVERLAY = "#FFE600";
 const MOBILE_GALLERY_Z = 30;
 const MOBILE_YELLOW_Z = MOBILE_CONTROLS_Z - 1;
@@ -251,16 +246,6 @@ export function MobileCasesGallery({ items, imageAnchor = "bottom" }: MobileCase
         Math.abs(deltaX) > Math.abs(deltaY)
       ) {
         setYellowOverlayActive(true);
-        gesture = "none";
-        return;
-      }
-
-      if (
-        finishedGesture === "none" &&
-        Math.abs(deltaX) < TAP_THRESHOLD &&
-        Math.abs(deltaY) < TAP_THRESHOLD
-      ) {
-        dispatchMobileFilterCycle();
         gesture = "none";
         return;
       }

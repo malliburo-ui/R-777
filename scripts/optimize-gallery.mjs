@@ -20,7 +20,7 @@ const WEBP_QUALITY = 88;
 
 const SOURCE_RASTER = /\.(png|jpe?g)$/i;
 const SOURCE_GIF = /\.gif$/i;
-const SOURCE_NAME = /^\d+\.(png|jpe?g|gif)$/i;
+const SOURCE_NAME = /^\d+B?\.(png|jpe?g|gif)$/i;
 
 async function optimizeFolder(folder) {
   const sourceDir = path.join(ROOT, "public", folder, "images");

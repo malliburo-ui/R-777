@@ -110,5 +110,10 @@
       "title": "22.gif",
       "image": "22.gif"
     }
-  ]
+  ],
+  "altImages": {
+    "15.webp": "15B.webp",
+    "20.webp": "20B.webp",
+    "7.webp": "7B.webp"
+  }
 }

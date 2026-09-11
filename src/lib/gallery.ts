@@ -4,8 +4,11 @@ export type GalleryEntry = {
   image: string;
 };
 
+export type GalleryAltImageMap = Record<string, string>;
+
 export type GalleryManifest = {
   items: GalleryEntry[];
+  altImages?: GalleryAltImageMap;
 };
 
 export function galleryImagePath(basePath: string, filename: string) {
@@ -19,4 +22,16 @@ export function resolveGalleryAssetPath(imageBasePath: string, filename: string)
   }
 
   return galleryImagePath(imageBasePath, filename);
+}
+
+export function resolveAltGalleryImage(
+  filename: string,
+  altBackgroundActive: boolean,
+  altImageMap?: GalleryAltImageMap,
+) {
+  if (!altBackgroundActive || !altImageMap) {
+    return filename;
+  }
+
+  return altImageMap[filename] ?? filename;
 }
