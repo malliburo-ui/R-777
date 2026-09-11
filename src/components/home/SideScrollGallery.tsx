@@ -167,11 +167,12 @@ export function SideScrollGallery({
         ? "object-contain object-right-bottom"
         : "object-contain object-right-top";
 
-  const previewMaxWidth = `clamp(${220 * previewScale}px, ${42 * previewScale}vw, ${420 * previewScale}px)`;
+  // ~58% of each half-panel; keeps laptop proportions on large monitors (was capped at 420px).
+  const previewMaxWidth = `clamp(${220 * previewScale}px, ${29 * previewScale}vw, ${960 * previewScale}px)`;
   const previewMaxHeight =
     previewScale > 1
       ? "min(85vh, calc(100dvh - 80px))"
-      : "min(70vh, calc(100dvh - 160px))";
+      : "min(72vh, calc(100dvh - 120px))";
 
   const zoneClassName = `absolute inset-y-0 z-20 w-1/2 touch-pan-y ${isLeft ? "left-0" : "right-0"}`;
 
