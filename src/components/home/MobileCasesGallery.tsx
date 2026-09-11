@@ -7,7 +7,7 @@ import { MOBILE_CONTROLS_ROOT_ID, MOBILE_CONTROLS_Z } from "@/components/home/Mo
 import { PAGE_SIDE_NAV_HOTSPOT_ID } from "@/components/home/PageSideNavHotspot";
 import { galleryImagePath, type GalleryEntry } from "@/lib/gallery";
 
-const GALLERY_ASSET_VERSION = "29";
+const GALLERY_ASSET_VERSION = "38";
 const PRELOAD_RADIUS = 2;
 const MOBILE_IMAGE_BASE = "/cases/Mobile";
 const MOBILE_FAN_SOURCE = "21.gif";
