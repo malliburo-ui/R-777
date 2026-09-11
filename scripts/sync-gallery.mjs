@@ -8,6 +8,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const GALLERY_FOLDERS = ["cases", "drawings", "mind", "cv-cube"];
+const SOURCE_GIF = /\.gif$/i;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, "..");
@@ -67,12 +68,14 @@ function main() {
   }
 
   const items = sourceFiles.map((sourceName) => {
+    const isGif = SOURCE_GIF.test(sourceName);
     const webName = sourceName.replace(/\.(png|jpe?g|gif)$/i, ".webp");
+    const servedName = isGif ? sourceName : webName;
     const override = meta[sourceName] ?? meta[webName] ?? {};
     return {
       id: override.id ?? idFromFilename(sourceName),
       title: override.title ?? titleFromFilename(sourceName),
-      image: webName,
+      image: override.image ?? servedName,
     };
   });
 

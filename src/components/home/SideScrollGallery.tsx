@@ -2,13 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { galleryImagePath, type GalleryEntry } from "@/lib/gallery";
+import { resolveGalleryAssetPath, type GalleryEntry } from "@/lib/gallery";
 
 const inset = "clamp(10px, 1.5vw, 16px)";
 const WHEEL_THRESHOLD = 36;
 const STEP_COOLDOWN_MS = 90;
 const PRELOAD_RADIUS = 2;
-const GALLERY_ASSET_VERSION = "30";
+const GALLERY_ASSET_VERSION = "31";
 
 type SideScrollGalleryProps = {
   side: "left" | "right";
@@ -24,7 +24,7 @@ type SideScrollGalleryProps = {
 const preloaded = new Set<string>();
 
 function preloadGalleryImage(basePath: string, filename: string, priority: "high" | "low" = "low") {
-  const url = `${galleryImagePath(basePath, filename)}?v=${GALLERY_ASSET_VERSION}`;
+  const url = `${resolveGalleryAssetPath(basePath, filename)}?v=${GALLERY_ASSET_VERSION}`;
   if (preloaded.has(url)) {
     return;
   }
@@ -201,7 +201,8 @@ export function SideScrollGallery({
           ? "justify-end items-start"
           : "justify-start items-start";
 
-  const imageSrc = `${galleryImagePath(imageBasePath, active.image)}?v=${GALLERY_ASSET_VERSION}`;
+  const imageSrc = `${resolveGalleryAssetPath(imageBasePath, active.image)}?v=${GALLERY_ASSET_VERSION}`;
+  const isAnimatedGif = /\.gif$/i.test(active.image);
 
   const onTouchStart = (event: React.TouchEvent) => {
     touchStartY.current = event.touches[0]?.clientY ?? null;
@@ -252,7 +253,10 @@ export function SideScrollGallery({
             src={imageSrc}
             alt={active.title}
             className="block h-auto w-auto max-w-full"
-            style={{ maxHeight: previewMaxHeight }}
+            style={{
+              maxHeight: previewMaxHeight,
+              ...(isAnimatedGif && isLeft ? { mixBlendMode: "screen" } : {}),
+            }}
             decoding="async"
             fetchPriority="high"
             draggable={false}
@@ -274,6 +278,7 @@ export function SideScrollGallery({
               src={imageSrc}
               alt={active.title}
               className={`absolute inset-0 size-full ${imageObjectClass}`}
+              style={isAnimatedGif && isLeft ? { mixBlendMode: "screen" } : undefined}
               decoding="async"
               fetchPriority="high"
               draggable={false}
